@@ -49,7 +49,7 @@ export default compose(
     p => ({ fullName: p.name + ' ' + p.surname }),
     ['name', 'surname']
   ),
-  withEffect(p => document.title = p.fullName),
+  withEffect(p => document.title = p.fullName, undefined, ['surname']),
   withState('width', window.innerWidth),
   withEventHandler('resize', p => p.setWidth(window.innerWidth)),
   withReducer(myReducer, { count: 0 }),
