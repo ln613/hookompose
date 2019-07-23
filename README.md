@@ -8,7 +8,7 @@ Hooks solve the wrapper hell problem, but introduce states and effects into the 
 
 Hookompose allows you to call hook functions in a recompose style, giving you the best of both worlds.
 
-For each hook function, there is a hookompose function (starts with 'with' instead of 'use') that will call the corresponding hook function and enhance the props of your component instead of enhance the component itself. Since these hookompose enhancer functions are higher order functions rather than higher order components, they don't suffer the HOC wrapper hell.
+For each hook function, there is a hookompose function (starts with 'with' instead of 'use') that will call the corresponding hook function and enhance the props of your component instead of enhancing the component itself. Since these hookompose enhancer functions are higher order functions rather than higher order components, they don't suffer the HOC wrapper hell.
 
 This is how you use the hook function useState and useEffect:
 

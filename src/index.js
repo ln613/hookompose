@@ -19,7 +19,7 @@ const getDeps = (deps, p) =>
 export const withEffect = (effect, cleanup, deps, useLayout) => p =>
   effect && (useLayout ? useLayoutEffect : useEffect)(() => {
     effect(p);
-    return cleanup && (() => cleanup(p));
+    return cleanup ? (() => cleanup(p)) : undefined;
   }, getDeps(deps, p));
 
 export const withLayoutEffect = (effect, cleanup, deps) =>
