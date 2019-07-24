@@ -55,6 +55,7 @@ The order of the enhancer functions are important, the new props just added are 
 
 ## Docs
 
+
 ### `withState`
 
 _withState_ takes two arguments, state name (required) and initial value. It calls _useState_ and returns the name/setName pair as object. To simplify the argument list, the name of the setter is automatically generated.
@@ -62,6 +63,7 @@ _withState_ takes two arguments, state name (required) and initial value. It cal
 ```js
   withState('surname', 'Poppins') // returns { surname: ..., setSurname: ... }
 ```
+
 
 ### `withEffect`
 
@@ -74,4 +76,20 @@ The _dependency_ list is a list of prop names that the effect depends on, the _e
 ```js
   withEffect(p => document.title = p.name + ' ' + p.surname) // document.title will be set on every render
   withEffect(p => document.title = p.name + ' ' + p.surname, null, ['surname']) // document.title will be set only if surname changes
+  withEffect(
+    p => window.addEventListener(event, h);
+  )
+```
+
+
+### `withLayoutEffect`
+
+```js
+  withLayoutEffect(effect, cleanup, deps)
+```
+
+is the same as
+
+```js
+  withEffect(effect, cleanup, deps, true)
 ```

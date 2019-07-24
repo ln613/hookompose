@@ -10,7 +10,7 @@ const callback = p => e =>
 const focusInputEl = p => e =>
   p.inputEl.current.focus();
 
-const App = ({ name, setName, surname, setSurname, callback, width, state, dispatch, inputEl, focusInputEl }) =>
+const App = ({ name, setName, surname, setSurname, callback, width, state, inc, dec, inputEl, focusInputEl }) =>
   
   <MyContext.Provider value={{ n1: 8, n2: 9 }}>
     
@@ -32,8 +32,8 @@ const App = ({ name, setName, surname, setSurname, callback, width, state, dispa
     <hr />
     
     <div>Count: {state.count}</div>
-    <button onClick={() => dispatch({ type: 'increment' })}>+</button>
-    <button onClick={() => dispatch({ type: 'decrement' })}>-</button>
+    <button onClick={inc}>+</button>
+    <button onClick={dec}>-</button>
     
     <hr />
     
@@ -53,6 +53,14 @@ export default compose(
   withState('width', window.innerWidth),
   withEventHandler('resize', p => p.setWidth(window.innerWidth)),
   withReducer(myReducer, { count: 0 }),
+  withMemo(
+    p => ({ inc: () => p.dispatch({ type: 'increment' }), dec: () => p.dispatch({ type: 'decrement' }) })
+  ),
+  withEffect(
+    p => setInterval(p.inc, 1000),
+    (p, id) => clearInterval(id),
+    []
+  ),
   withRef('inputEl'),
   withCallback(
     { callback, focusInputEl },
