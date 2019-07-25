@@ -4,6 +4,7 @@
   "description": "Hookompose allows you to call hook functions in a recompose style, giving you the best of both worlds.",
   "main": "dist",
   "scripts": {
+    "start": "watch \"npm run build\" src",
     "build": "babel src/index.js --out-dir dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

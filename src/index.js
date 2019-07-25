@@ -1,5 +1,5 @@
 import { useState, useEffect, useLayoutEffect, useContext, useReducer, useCallback, useMemo, useRef } from 'react';
-
+const tap=x => {console.log(x);return x;}
 export const compose = (...fns) => Comp => p =>
   Comp({ ...fns.reduce((r, n) => ({ ...r, ...n(r) }), p) });
 
@@ -25,12 +25,23 @@ export const withEffect = (effect, cleanup, deps, useLayout) => p =>
 export const withLayoutEffect = (effect, cleanup, deps) =>
   withEffect(effect, cleanup, deps, true);
 
-export const withEventHandler = (event, handler) => p =>
+export const withEventHandler = (selector, event, handler, deps) => p =>
   useEffect(() => {
     const h = e => handler({ ...p, targetValue: e.target.value });
-    window.addEventListener(event, h);
-    return () => window.removeEventListener(event, h);
-  }, []);
+    const elements = selector ? document.querySelectorAll(selector) : [window];
+    elements.forEach(e => e.addEventListener(event, h));
+    return () => elements.forEach(e => e.removeEventListener(event, h));
+  }, deps);
+
+export const withWindowEventHandler = (event, handler, deps) =>
+  withEventHandler(null, event, handler, deps);
+
+export const withInterval = (func, delay, deps) =>
+  withEffect(
+    p => setInterval(() => func(p), delay),
+    (p, id) => clearInterval(id),
+    deps
+  );
 
 export const withContext = (context, name) => p =>
   ({ [name || 'context']: useContext(context) });

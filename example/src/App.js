@@ -1,5 +1,5 @@
 import React from 'react';
-import { compose, withState, withEffect, withEventHandler, withCallback, withMemo, withReducer, withRef } from 'hookompose';
+import { compose, withState, withEffect, withEventHandler, withWindowEventHandler, withInterval, withCallback, withMemo, withReducer, withRef } from 'hookompose';
 import ContextConsumer from './contextConsumer';
 import { MyContext } from './context';
 import { myReducer } from './reducer';
@@ -23,6 +23,11 @@ const App = ({ name, setName, surname, setSurname, callback, width, state, inc, 
     
     <hr />
     
+    <button class="btn2">Event Listener 1</button>
+    <button class="btn2">Event Listener 2</button>
+    
+    <hr />
+
     <div>Width: {width}</div>
     
     <hr />
@@ -51,16 +56,13 @@ export default compose(
   ),
   withEffect(p => document.title = p.fullName, null, ['surname']),
   withState('width', window.innerWidth),
-  withEventHandler('resize', p => p.setWidth(window.innerWidth)),
+  withWindowEventHandler('resize', p => p.setWidth(window.innerWidth), []),
+  withEventHandler('.btn2', 'click', p => p.setName(p.name + '1')),
   withReducer(myReducer, { count: 0 }),
   withMemo(
     p => ({ inc: () => p.dispatch({ type: 'increment' }), dec: () => p.dispatch({ type: 'decrement' }) })
   ),
-  withEffect(
-    p => setInterval(p.inc, 1000),
-    (p, id) => clearInterval(id),
-    []
-  ),
+  withInterval(p => p.inc(), 1000, []),
   withRef('inputEl'),
   withCallback(
     { callback, focusInputEl },
