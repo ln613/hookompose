@@ -76,11 +76,7 @@ The _dependency_ list is a list of prop names that the effect depends on, the _e
 ```js
   withEffect(p => document.title = p.name + ' ' + p.surname) // document.title will be set on every render
   withEffect(p => document.title = p.name + ' ' + p.surname, null, ['surname']) // document.title will be set only if surname changes
-  withEffect(
-    p => window.addEventListener(event, h);
-  )
 ```
-
 
 ### `withLayoutEffect`
 
@@ -92,4 +88,83 @@ is the same as
 
 ```js
   withEffect(effect, cleanup, deps, true)
+```
+
+Which will call _useLayoutEffect_ instead of _useEffect_.
+
+
+### `withEventHandler`
+
+When you use the effect hook to attach event handlers to elements, you always have to clean up and remove the event handler. _withEventHandler_ is a helper function that will help you remove the event handler. You can specify a CSS selector to identify the elements to which the event handler will attach.
+
+```js
+  withEventHandler('.btn2', 'click', p => p.setName(p.name + '1'))
+```
+
+Based on the design of hooks, this will remove and re-attach the handler on every render. If you want to improve performance and remove the handler only on unmounting, specify an empty dependency list. This will attach the handler on mounting and remove it on unmounting. However, if your handler is using any state from the props, be aware of the stale state/prop issue. If you do the following:
+
+```js
+  withEventHandler('.btn2', 'click', p => p.setName(p.name + '1'), [])
+```
+
+The _p.name_ will always be 1. This is because of the way how javascript closure works. For more information, please refer to [hooks documentation](https://reactjs.org/docs/hooks-faq.html#performance-optimizations)
+
+### `withWindowEventHandler`
+
+_withWindowEventHandler_ allows you to attach event handlers on the window object.
+
+```js
+  withWindowEventHandler('resize', p => p.setWidth(window.innerWidth), [])
+```
+
+In this example, using the empty dependency list is safe because the event handler is not using any state from the props (it uses setWidth from the props, but it's a static function, it never changes).
+
+### `withInterval`
+
+_withInterval_ will call the useEffect hook to _setInterval_ and _clearInterval_.
+
+```js
+  withInterval(p => p.setCount(c => c + 1), 1000, [])
+```
+
+In this example, using the empty dependency list is safe because we are using the [functional update form of setCount](https://reactjs.org/docs/hooks-faq.html#performance-optimizations).
+
+### `withMemo`
+
+Based on the design of hookompose enhancers, we don't even need a special enhancer to achieve the functionality of _withProps_ from recompose, which attach additional props to the existing props. We can simply write a function like that:
+
+```js
+  compose(
+    withState('name', 'Mary'),
+    withState('surname', 'Poppins'),
+    p => ({ fullName: p.name + ' ' + p.surname })
+  )(App)
+```
+
+If you want to specify a dependency list (which serves the same purpose as _withPropsOnChange_ from recompose), you can use _withMemo_ (which will call the _useMemo_ hook):
+
+```js
+  withMemo(
+    p => ({ fullName: p.name + ' ' + p.surname }),
+    ['name', 'surname']
+  )
+```
+
+### `withRef`
+
+_withRef_ will call useRef to create a ref to a mutable object (usually an UI element), and attach the ref to the props.
+
+```js
+const App = ({ inputEl, focusInputEl }) =>
+  <>
+    <input ref={inputEl} type="text" />
+    <button onClick={focusInputEl}>Focus the input</button>
+  <>;
+
+export default compose(
+  withRef('inputEl'),
+  withCallback({
+    focusInputEl: p => e => p.inputEl.current.focus()
+  }),
+)(App);
 ```
