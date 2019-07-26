@@ -4,13 +4,7 @@ import ContextConsumer from './contextConsumer';
 import { MyContext } from './context';
 import { myReducer } from './reducer';
 
-const callback = p => e =>
-  alert(`${e.target.id} clicked. Full name: ${p.fullName}`);
-
-const focusInputEl = p => e =>
-  p.inputEl.current.focus();
-
-const App = ({ name, setName, surname, setSurname, callback, width, state, inc, dec, inputEl, focusInputEl }) =>
+const App = ({ name, setName, surname, setSurname, backColor, changeColor, width, state, inc, dec, inputEl, focusInput }) =>
   
   <MyContext.Provider value={{ n1: 8, n2: 9 }}>
     
@@ -19,7 +13,7 @@ const App = ({ name, setName, surname, setSurname, callback, width, state, inc, 
     
     <hr />
     
-    <button id="btn1" onClick={callback}>callback</button>
+    <div onMouseEnter={() => changeColor('red')} onMouseOut={() => changeColor('green')} style={{ width: '100px', height: '100px', backgroundColor: backColor }}></div>
     
     <hr />
     
@@ -43,7 +37,7 @@ const App = ({ name, setName, surname, setSurname, callback, width, state, inc, 
     <hr />
     
     <input ref={inputEl} type="text" />
-    <button onClick={focusInputEl}>Focus the input</button>
+    <button onClick={focusInput}>Focus the input</button>
 
   </MyContext.Provider>;
 
@@ -59,13 +53,13 @@ export default compose(
   withWindowEventHandler('resize', p => p.setWidth(window.innerWidth), []),
   withEventHandler('.btn2', 'click', p => p.setName(p.name + '1')),
   withReducer(myReducer, { count: 0 }),
-  withMemo(
-    p => ({ inc: () => p.dispatch({ type: 'increment' }), dec: () => p.dispatch({ type: 'decrement' }) })
-  ),
-  withInterval(p => p.inc(), 1000, []),
   withRef('inputEl'),
-  withCallback(
-    { callback, focusInputEl },
-    ['surname']
-  ),
+  withState('backColor', 'green'),
+  withMemo(p => ({
+    inc: () => p.dispatch({ type: 'increment' }),
+    dec: () => p.dispatch({ type: 'decrement' }),
+    changeColor: c => p.setBackColor(c),
+    focusInput: () => p.inputEl.current.focus()
+  })),
+  withInterval(p => p.inc(), 1000, []),
 )(App);

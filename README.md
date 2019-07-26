@@ -150,6 +150,12 @@ If you want to specify a dependency list (which serves the same purpose as _with
   )
 ```
 
+### `withCallback`
+
+_withCallback_ will call useCallback to memorize the callback function and only re-create the callback function if anything in the dependency list changes.
+
+Since the callback function is not defined inline inside the functional component, it's not garbage collected and re-created for every render. So in most cases there is no need to use withCallback to "remember" that function. This article explains [when to use or not to use the useCallback hook](https://kentcdodds.com/blog/usememo-and-usecallback).
+
 ### `withRef`
 
 _withRef_ will call useRef to create a ref to a mutable object (usually an UI element), and attach the ref to the props.
