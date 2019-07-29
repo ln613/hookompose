@@ -1,10 +1,10 @@
-import React from 'react';
-import { compose, withState, withEffect, withEventHandler, withWindowEventHandler, withInterval, withCallback, withMemo, withReducer, withRef } from 'hookompose';
+import React, { useState, useEffect } from 'react';
+import { compose, withState, withEffect, withEventHandler, withWindowEventHandler, withInterval, withMemo, withReducer, withRef } from 'hookompose';
 import ContextConsumer from './contextConsumer';
 import { MyContext } from './myContext';
-import { myReducer } from './reducer';
-const tap = x => { console.log(x); return x; }
-const App = ({ name, setName, surname, setSurname, backColor, toGreen, toRed, width, state, inc, dec, inputEl, focusInput }) =>
+import myReducer from './myReducer';
+
+const App = ({ name, setName, surname, setSurname, backColor, toGreen, toRed, width, state, inc, dec, inputEl, focusInput, x, y }) =>
   
   <MyContext.Provider value={{ n1: 8, n2: 9 }}>
     <div>Name: <input value={name} onChange={e => setName(e.target.value)} /></div>
@@ -16,8 +16,9 @@ const App = ({ name, setName, surname, setSurname, backColor, toGreen, toRed, wi
     
     <hr />
     
-    <button class="btn2">Event Listener 1</button>
-    <button class="btn2">Event Listener 2</button>
+    <button id="btn1">Button 1</button>
+    <button id="btn2">Button 2</button>
+    <button id="btn3">Button 3</button>
     
     <hr />
 
@@ -38,18 +39,41 @@ const App = ({ name, setName, surname, setSurname, backColor, toGreen, toRed, wi
     <input ref={inputEl} type="text" />
     <button onClick={focusInput}>Focus the input</button>
 
+    <hr />
+
+    Mouse Position: {x}, {y}
+
   </MyContext.Provider>;
 
+const withWidth = [
+  withState('width', window.innerWidth),
+  withWindowEventHandler('resize', p => p.setWidth(window.innerWidth), [])
+];
+
+const useMouseMove = () => {
+  const [x, setX] = useState(0);
+  const [y, setY] = useState(0);
+  const handler = e => { console.log(e); setX(e.x); setY(e.y); };
+  useEffect(() => {
+    window.addEventListener('mousemove', e => { setX(e.x); setY(e.y); });
+    return window.removeEventListener('mousemove', handler);
+  }, []);
+  return { x, y };
+};
+
 export default compose(
+  
   withState('name', 'Mary'),
   withState('surname', 'Poppins'),
+
   withMemo(p => ({
     fullName: p.name + ' ' + p.surname
   }), ['name', 'surname']),
-  withEffect(p => document.title = p.fullName, null, ['surname']),
-  withState('width', window.innerWidth),
-  withWindowEventHandler('resize', p => p.setWidth(window.innerWidth), []),
-  withEventHandler('.btn2', 'click', p => p.setName(p.name + '1')),
+  
+  withEffect(p => document.title = p.fullName, null, ['fullName']),
+  
+  ...withWidth,
+  
   withReducer(myReducer, { count: 0 }),
   withRef('inputEl'),
   withState('backColor', 'green'),
@@ -60,5 +84,16 @@ export default compose(
     toRed: () => p.setBackColor('red'),
     focusInput: () => p.inputEl.current.focus()
   })),
+
+  // use the state 'name', so need to depend on 'name'
+  withEventHandler('#btn1', 'click', p => p.setName(p.name + '1'), ['name']),
+  // use the callback form of the setter, so do not depend on 'name'
+  withEventHandler('#btn2', 'click', p => p.setName(name => name + '2'), []),
+  // use reducer, so do not depend on 'state.count'
+  withEventHandler('#btn3', 'click', p => p.inc(), []),
+
   withInterval(p => p.inc(), 1000, []),
+
+  useMouseMove
+
 )(App);

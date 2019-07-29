@@ -1,4 +1,4 @@
-export const myReducer = (state, action) => {
+export default (state, action) => {
   switch (action.type) {
     case 'increment':
       return {count: state.count + 1};

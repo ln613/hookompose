@@ -143,14 +143,7 @@ _withMemo_ will call the _useMemo_ hook to remember the result of the enhancer, 
   )(App)
 ```
 
-It serves the same purpose as _withPropsOnChange_ from recompose. You can also use it to achieve the same result as the _useCallback_ hook:
-
-```js
-  withMemo(p => ({
-    inc: () => p.dispatch({ type: 'increment' }),
-    dec: () => p.dispatch({ type: 'decrement' })
-  }), []),
-```
+It serves the same purpose as _withPropsOnChange_ from recompose. You can also use it to achieve the same result as the _useCallback_ hook (see examples under 'withRef' and 'withReducer').
 
 ### `withRef`
 
@@ -191,4 +184,38 @@ const ContextConsumer = ({ ctx }) =>
 export default compose(
   withContext(MyContext, 'ctx')
 )(ContextConsumer);
+```
+
+### `withReducer`
+
+_withReducer_ will call the _useReducer_ hook to handle complex local states. For use cases of _useReducer_, please refer to the [hooks documentation](https://reactjs.org/docs/hooks-reference.html#usereducer). The 2nd argument of _withReducer_ is the initial state, the 3rd is the name of the state (default value is 'state'), and the 4th is the name of the dispatch function (default value is 'dispatch').
+
+```js
+// in myReducer.js
+export default (state, action) => {
+  switch (action.type) {
+    case 'increment':
+      return {count: state.count + 1};
+    case 'decrement':
+      return {count: state.count - 1};
+    default:
+      throw new Error();
+  }
+}
+
+// in App.js
+const App = ({ state, inc, dec }) =>
+  <>
+    <div>Count: {state.count}</div>
+    <button onClick={inc}>+</button>
+    <button onClick={dec}>-</button>
+  </>;
+
+export default compose(
+  withReducer(myReducer, { count: 0 }),
+  withMemo(p => ({
+    inc: () => p.dispatch({ type: 'increment' }),
+    dec: () => p.dispatch({ type: 'decrement' })
+  }), [])
+)(App);
 ```

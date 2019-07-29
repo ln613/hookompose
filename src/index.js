@@ -1,5 +1,5 @@
-import { useState, useEffect, useLayoutEffect, useContext, useReducer, useCallback, useMemo, useRef } from 'react';
-const tap=x => {console.log(x);return x;}
+import { useState, useEffect, useLayoutEffect, useContext, useReducer, useMemo, useRef } from 'react';
+
 export const compose = (...fns) => Comp => p =>
   Comp({ ...fns.reduce((r, n) => ({ ...r, ...n(r) }), p) });
 
@@ -14,7 +14,7 @@ export const withState = (name, value) => p => {
 }
 
 const getDeps = (deps, p) =>
-  deps ? deps.map(x => p[x]) : Object.values(p);
+  deps ? deps.map(x => p[x]) : null;
 
 export const withEffect = (effect, cleanup, deps, useLayout) => p =>
   effect && (useLayout ? useLayoutEffect : useEffect)(() => {
@@ -27,11 +27,11 @@ export const withLayoutEffect = (effect, cleanup, deps) =>
 
 export const withEventHandler = (selector, event, handler, deps) => p =>
   useEffect(() => {
-    const h = e => handler({ ...p, targetValue: e.target.value });
+    const h = e => handler({ ...p, event: e });
     const elements = selector ? document.querySelectorAll(selector) : [window];
     elements.forEach(e => e.addEventListener(event, h));
     return () => elements.forEach(e => e.removeEventListener(event, h));
-  }, deps);
+  }, getDeps(deps, p));
 
 export const withWindowEventHandler = (event, handler, deps) =>
   withEventHandler(null, event, handler, deps);
