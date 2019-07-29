@@ -54,13 +54,6 @@ export const withReducer = (reducer, initialValue, stateName, dispatchName) => p
   };
 };
 
-export const withCallback = (callbacks, deps) => p =>
-  Object.fromEntries(
-    Object.entries(callbacks).map(([key, value]) =>
-      [key, useCallback(value(p), getDeps(deps, p))]
-    )
-  );
-
 export const withMemo = (func, deps) => p =>
   useMemo(() => func(p), getDeps(deps, p));
 

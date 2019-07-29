@@ -131,30 +131,26 @@ In this example, using the empty dependency list is safe because we are using th
 
 ### `withMemo`
 
-Based on the design of hookompose enhancers, we don't even need a special enhancer to achieve the functionality of _withProps_ from recompose, which attach additional props to the existing props. We can simply write a function like that:
+_withMemo_ will call the _useMemo_ hook to remember the result of the enhancer, only re-calculate the result if dependency list changes.
 
 ```js
   compose(
     withState('name', 'Mary'),
     withState('surname', 'Poppins'),
-    p => ({ fullName: p.name + ' ' + p.surname })
+    withMemo(p => ({
+      fullName: p.name + ' ' + p.surname
+    }), ['name', 'surname'])
   )(App)
 ```
 
-If you want to specify a dependency list (which serves the same purpose as _withPropsOnChange_ from recompose), you can use _withMemo_ (which will call the _useMemo_ hook):
+It serves the same purpose as _withPropsOnChange_ from recompose. You can also use it to achieve the same result as the _useCallback_ hook:
 
 ```js
-  withMemo(
-    p => ({ fullName: p.name + ' ' + p.surname }),
-    ['name', 'surname']
-  )
+  withMemo(p => ({
+    inc: () => p.dispatch({ type: 'increment' }),
+    dec: () => p.dispatch({ type: 'decrement' })
+  }), []),
 ```
-
-### `withCallback`
-
-_withCallback_ will call useCallback to memorize the callback function and only re-create the callback function if anything in the dependency list changes.
-
-Since the callback function is not defined inline inside the functional component, it's not garbage collected and re-created for every render. So in most cases there is no need to use withCallback to "remember" that function. This article explains [when to use or not to use the useCallback hook](https://kentcdodds.com/blog/usememo-and-usecallback).
 
 ### `withRef`
 
@@ -169,8 +165,30 @@ const App = ({ inputEl, focusInputEl }) =>
 
 export default compose(
   withRef('inputEl'),
-  withCallback({
-    focusInputEl: p => e => p.inputEl.current.focus()
-  }),
+  withMemo(p => ({
+    focusInputEl: () => p.inputEl.current.focus()
+  }), []),
 )(App);
+```
+
+### `withContext`
+
+_withContext_ will call the _useContext_ hook to enhance the props with the context value. The 2nd argument is the name of the context variable on the props, default value is "context".
+
+```js
+// in myContext.js
+export const MyContext = createContext();
+
+// in contextProvider.js
+<MyContext.Provider value={{ n1: 8, n2: 9 }}>
+  <ContextConsumer />
+</MyContext.Provider>
+
+// in contextConsumer.js
+const ContextConsumer = ({ ctx }) =>
+  <div>Context Value: {ctx.n2}</div>;
+
+export default compose(
+  withContext(MyContext, 'ctx')
+)(ContextConsumer);
 ```

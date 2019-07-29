@@ -1,6 +1,6 @@
 import React from 'react';
 import { compose, withContext } from 'hookompose';
-import { MyContext } from './context';
+import { MyContext } from './myContext';
 
 const ContextConsumer = ({ ctx }) =>
   <div>Context Value: {ctx.n2}</div>;
