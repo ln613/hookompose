@@ -67,7 +67,7 @@ _withState_ takes two arguments, state name (required) and initial value. It cal
 
 ### `withEffect`
 
-_withEffect_ takes four arguments, the _effect_ function (required), the _cleanup_ function, the _dependency_ list and a boolean value _useLayout_ indicating calling _useLayoutEffect_ or _useEffect_.
+_withEffect_ takes four arguments, the _effect_ function (required), the _cleanup_ function, the _dependency_ list and a boolean value _useLayout_ indicating whether to use _useLayoutEffect_ or _useEffect_.
 
 Both the _effect_ function and the _cleanup_ function takes the current props as input.
 
@@ -76,6 +76,7 @@ The _dependency_ list is a list of prop names that the effect depends on, the _e
 ```js
   withEffect(p => document.title = p.name + ' ' + p.surname) // document.title will be set on every render
   withEffect(p => document.title = p.name + ' ' + p.surname, null, ['surname']) // document.title will be set only if surname changes
+  withEffect(p => document.title = p.name + ' ' + p.surname, null, p => [p.name, p.surname]) // The dependency list can also be specified as a callback function
 ```
 
 ### `withLayoutEffect`
@@ -95,19 +96,38 @@ Which will call _useLayoutEffect_ instead of _useEffect_.
 
 ### `withEventHandler`
 
-When you use the effect hook to attach event handlers to elements, you always have to clean up and remove the event handler. _withEventHandler_ is a helper function that will help you remove the event handler. You can specify a CSS selector to identify the elements to which the event handler will attach.
+When you use the effect hook to attach event handlers to elements, you always have to clean up and remove the event handler. _withEventHandler_ is a helper function that will help you remove the event handler.
+
+_withEventHandler_ takes four arguments, the CSS _selector_ (required) which is used to identify the elements, the _event_ name (required), the _handler_ (required) which takes the props (the event args object will be added to the props as 'event') as input and the _dependency_ list.
 
 ```js
-  withEventHandler('.btn2', 'click', p => p.setName(p.name + '1'))
+  withEventHandler('#btn2', 'click', p => p.setCount(p.count + 1))
 ```
 
 Based on the design of hooks, this will remove and re-attach the handler on every render. If you want to improve performance and remove the handler only on unmounting, specify an empty dependency list. This will attach the handler on mounting and remove it on unmounting. However, if your handler is using any state from the props, be aware of the stale state/prop issue. If you do the following:
 
 ```js
-  withEventHandler('.btn2', 'click', p => p.setName(p.name + '1'), [])
+  withEventHandler('#btn2', 'click', p => p.setCount(p.count + 1), [])
 ```
 
-The _p.name_ will always be 1. This is because of the way how javascript closure works. For more information, please refer to [hooks documentation](https://reactjs.org/docs/hooks-faq.html#performance-optimizations)
+The _p.count_ will not be changed after the first render. This is because of the way how javascript closure works. For more information, please refer to [hooks documentation](https://reactjs.org/docs/hooks-faq.html#performance-optimizations).
+
+There are 3 ways to solve the problem:
+
+1. add _p.count_ to the dependency list:
+
+```js
+  withEventHandler('#btn2', 'click', p => p.setCount(p.count + 1), ['count'])
+```
+
+2. for local state, use the callback form of the setter:
+
+```js
+  withEventHandler('#btn2', 'click', p => p.setCount(count => count + 1), [])
+```
+
+3. use the _useReducer_ hook. See _withReducer_.
+
 
 ### `withWindowEventHandler`
 
@@ -126,8 +146,6 @@ _withInterval_ will call the useEffect hook to _setInterval_ and _clearInterval_
 ```js
   withInterval(p => p.setCount(c => c + 1), 1000, [])
 ```
-
-In this example, using the empty dependency list is safe because we are using the [functional update form of setCount](https://reactjs.org/docs/hooks-faq.html#performance-optimizations).
 
 ### `withMemo`
 
@@ -217,5 +235,35 @@ export default compose(
     inc: () => p.dispatch({ type: 'increment' }),
     dec: () => p.dispatch({ type: 'decrement' })
   }), [])
+)(App);
+```
+
+## Custom hooks
+
+Similar to the purpose of custom hooks, you can combine enhancers to re-use them as a unit.
+
+```js
+const withWidth = [
+  withState('width', window.innerWidth),
+  withWindowEventHandler('resize', p => p.setWidth(window.innerWidth), [])
+];
+
+export default compose(
+  withState('name', 'Mary'),
+  ...withWidth
+)(App);
+```
+
+Since an enhancer is just a function which takes the current props and returns additional props, if you already have a custom hook or any other function with effect, you just need to create a wrapper function that returns the result as additional props.
+
+```js
+const useFullName = () => {
+  const [name, setName] = useState('Mary');
+  const [surname, setSurname] = useState('Poppins');
+  return useMemo(() => name + ' ' + surname, [name, surname]);
+};
+
+export default compose(
+  p => ({ fullName: useFullName() })
 )(App);
 ```

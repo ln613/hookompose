@@ -14,7 +14,11 @@ export const withState = (name, value) => p => {
 }
 
 const getDeps = (deps, p) =>
-  deps ? deps.map(x => p[x]) : null;
+  deps
+    ? (typeof deps === 'function'
+      ? deps(p)
+      : deps.map(x => p[x]))
+    : null;
 
 export const withEffect = (effect, cleanup, deps, useLayout) => p =>
   effect && (useLayout ? useLayoutEffect : useEffect)(() => {

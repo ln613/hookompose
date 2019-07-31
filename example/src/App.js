@@ -50,15 +50,15 @@ const withWidth = [
   withWindowEventHandler('resize', p => p.setWidth(window.innerWidth), [])
 ];
 
+// custom hook
 const useMouseMove = () => {
-  const [x, setX] = useState(0);
-  const [y, setY] = useState(0);
-  const handler = e => { console.log(e); setX(e.x); setY(e.y); };
+  const [position, setPosition] = useState({ x: 0, y: 0 });
   useEffect(() => {
-    window.addEventListener('mousemove', e => { setX(e.x); setY(e.y); });
-    return window.removeEventListener('mousemove', handler);
+    const handler = e => setPosition({ x: e.x, y: e.y });
+    window.addEventListener('mousemove', handler);
+    return () => window.removeEventListener('mousemove', handler);
   }, []);
-  return { x, y };
+  return position;
 };
 
 export default compose(
@@ -70,7 +70,7 @@ export default compose(
     fullName: p.name + ' ' + p.surname
   }), ['name', 'surname']),
   
-  withEffect(p => document.title = p.fullName, null, ['fullName']),
+  withEffect(p => document.title = p.fullName, null, p => [p.fullName]),
   
   ...withWidth,
   
