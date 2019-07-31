@@ -1,14 +1,10 @@
 # hookompose
 
-Hooks and recompose are two ways that we can use to give functional components the ability to handle local states and lifecycle events, in order to eliminate the need of class components.
+React _hooks_ allow you to use local states and effects in a functional component, but your functional component is no longer pure.
 
-Recompose is using the "enhancer" pattern, providing enhancer functions (which are higher order components) to enhance the pure presentational functional components with those stateful features. As a result, your components can be written in a highly functional style. However, because all recompose "enhancers" are HOCs, recompose suffers the HOC wrapper hell.
+_Recompose_ serves the same purpose as hooks by providing enhancer functions (which are higher order components) to enhance your pure functional components with local states and effects. Your functional component is kept pure, but recompose suffers the HOC wrapper hell.
 
-Hooks solve the wrapper hell problem, but introduce states and effects into the functional component, thus making your components less functional.
-
-Hookompose allows you to call hook functions in a recompose style, giving you the best of both worlds.
-
-For each hook function, there is a hookompose function (starts with 'with' instead of 'use') that will call the corresponding hook function and enhance the props of your component instead of enhancing the component itself. Since these hookompose enhancer functions are higher order functions rather than higher order components, they don't suffer the HOC wrapper hell.
+_Hookompose_ allows you to call hook functions in a recompose style, giving you the best of both worlds.
 
 This is how you use the hook function useState and useEffect:
 
@@ -49,7 +45,9 @@ export default compose(
 
 The App component is now a stateless, pure presentational component, local states become props. This is exactly the same style as recompose, but using hooks, thus no wrapper hell.
 
-The compose function from hookompose is a HOC, while all other enhancer functions (withState, withEffect, withMemo...) are HOFs. They take the current props as input, call the corresponding hook function and return the result as additional props. The compose function takes the props of the presentational component, run it through all the enhancer functions and return a new component with the enhanced props.
+The _withState_, _withEffect_ are just wrapper functions of the corresponding hook functions (_useState_, _useEffect_). They call the corresponding hook functions and return the result as an object containing new props. The _compose_ function is a HOC, it takes the props of the presentational component, run it through all the enhancer functions and return a new component with the enhanced props.
+
+Hookompose provides a list of wrapper functions, one for each hook function, but you can use any function (which takes the current props as input and return an object containing new props) as an enhancer.
 
 The order of the enhancer functions are important, the new props just added are available to the next enhancer function.
 
