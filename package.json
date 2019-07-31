@@ -8,6 +8,10 @@
     "hook",
     "recompose"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ln613/hookompose.git"
+  },
   "main": "dist",
   "scripts": {
     "start": "watch \"npm run build\" src",
