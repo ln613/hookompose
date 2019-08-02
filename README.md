@@ -51,6 +51,8 @@ Hookompose provides a list of wrapper functions, one for each hook function, but
 
 The order of the enhancer functions are important, the new props just added are available to the next enhancer function.
 
+[This post](https://medium.com/@ln613/use-react-hooks-in-recompose-style-50446043eb23) gives a detailed explanation on the implementation of the _compose_ and _enhancer functions_.
+
 ## Docs
 
 
