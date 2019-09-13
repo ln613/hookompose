@@ -1,7 +1,7 @@
 import { useState, useEffect, useLayoutEffect, useContext, useReducer, useMemo, useRef } from 'react';
 
 export const compose = (...fns) => Comp => p =>
-  Comp({ ...fns.reduce((r, n) => ({ ...r, ...n(r) }), p) });
+  Comp(fns.reduce((r, n) => ({ ...r, ...n(r) }), p));
 
 export const withState = (name, value) => p => {
   if (!name) return {};
