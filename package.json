@@ -12,10 +12,10 @@
     "type": "git",
     "url": "git+https://github.com/ln613/hookompose.git"
   },
-  "main": "dist",
+  "main": "common",
   "scripts": {
     "start": "watch \"npm run build\" src",
-    "build": "babel src/index.js --out-dir dist",
+    "build": "babel src --out-dir .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Nan Li",

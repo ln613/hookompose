@@ -1,5 +1,6 @@
 import React from 'react';
-import { compose, withRedux } from 'hookompose';
+import { compose } from 'hookompose';
+import { withRedux } from 'hookompose/redux';
 
 const Counter = ({ count, dispatch }) =>
   <div>

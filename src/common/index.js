@@ -1,5 +1,4 @@
 import { useState, useEffect, useLayoutEffect, useContext, useReducer, useMemo, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 
 export const compose = (...fns) => Comp => p =>
   Comp(fns.reduce((r, n) => ({ ...r, ...n(r) }), p));
@@ -64,14 +63,3 @@ export const withMemo = (func, deps) => p =>
 
 export const withRef = (name, initialValue) => () =>
   ({ [name]: useRef(initialValue || null) });
-
-export const withSelector = (selector, name) => p =>
-  ({ [name || 'state']: useSelector(selector) });
-
-export const withDispatch = () => p =>
-  ({ dispatch: useDispatch() });
-  
-export const withRedux = (selector, name) => p => ({
-  [name || 'state']: useSelector(selector),
-  dispatch: useDispatch()
-});
