@@ -3,6 +3,7 @@ import { compose, withState, withEffect, withEventHandler, withWindowEventHandle
 import ContextConsumer from './contextConsumer';
 import { MyContext } from './myContext';
 import myReducer from './myReducer';
+import Counter from './Counter';
 
 const App = ({ name, setName, surname, setSurname, backColor, toGreen, toRed, width, state, inc, dec, inputEl, focusInput, x, y }) =>
   
@@ -42,6 +43,10 @@ const App = ({ name, setName, surname, setSurname, backColor, toGreen, toRed, wi
     <hr />
 
     Mouse Position: {x}, {y}
+
+    <hr />
+
+    <Counter />
 
   </MyContext.Provider>;
 
