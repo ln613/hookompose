@@ -63,3 +63,7 @@ export const withMemo = (func, deps) => p =>
 
 export const withRef = (name, initialValue) => () =>
   ({ [name]: useRef(initialValue || null) });
+
+export const withFetch = url => async () => ({
+  res: await fetch(url).then(r => r.json())
+})
