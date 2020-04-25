@@ -64,6 +64,10 @@ export const withMemo = (func, deps) => p =>
 export const withRef = (name, initialValue) => () =>
   ({ [name]: useRef(initialValue || null) });
 
-export const withFetch = url => async () => ({
-  res: await fetch(url).then(r => r.json())
-})
+export const withFetch = (prop, url, deps) => p =>
+  useEffect(() => {
+    fetch(url(p))
+      .then(r => r.json())
+      .then(r => p['set' + prop[0].toUpperCase() + prop.slice(1)](r))
+      .catch(console.log)
+  }, getDeps(deps, p))
