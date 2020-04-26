@@ -180,8 +180,7 @@ var withFetch = function withFetch(_ref7, deps) {
       url = _ref7.url,
       _ref7$params = _ref7.params,
       params = _ref7$params === void 0 ? {} : _ref7$params,
-      _ref7$body = _ref7.body,
-      body = _ref7$body === void 0 ? {} : _ref7$body,
+      body = _ref7.body,
       _ref7$headers = _ref7.headers,
       headers = _ref7$headers === void 0 ? {} : _ref7$headers,
       transform = _ref7.transform;

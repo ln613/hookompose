@@ -70,7 +70,7 @@ export const withRef = (name, initialValue) => () =>
 
 const formatUrl = (url, params) => Object.entries(params).reduce((p, [k, v]) => p.replace(new RegExp(`{${k}}`, 'g'), v), url)
   
-export const withFetch = ({ prop, method = 'get', url, params = {}, body = {}, headers = {}, transform }, deps) => p =>
+export const withFetch = ({ prop, method = 'get', url, params = {}, body, headers = {}, transform }, deps) => p =>
   useEffect(() => {
     fetch(formatUrl(url, f(params, p)), { method, headers: f(headers, p), body: f(body, p) })
       .then(r => r.json())
