@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.withFetch = exports.withRef = exports.withMemo = exports.withReducer = exports.withContext = exports.withInterval = exports.withWindowEventHandler = exports.withEventHandler = exports.withLayoutEffect = exports.withEffect = exports.withState = exports.compose = void 0;
+exports.withPost = exports.withGet = exports.withFetch = exports.withRef = exports.withMemo = exports.withReducer = exports.withContext = exports.withInterval = exports.withWindowEventHandler = exports.withEventHandler = exports.withLayoutEffect = exports.withEffect = exports.withState = exports.compose = void 0;
 
 var _react = require("react");
 
@@ -24,6 +24,10 @@ function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (O
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var f = function f(v, p) {
+  return typeof v === 'function' ? v(p) : v;
+};
 
 var compose = function compose() {
   for (var _len = arguments.length, fns = new Array(_len), _key = 0; _key < _len; _key++) {
@@ -53,12 +57,6 @@ var withState = function withState(name, value) {
 
 exports.withState = withState;
 
-var getDeps = function getDeps(deps, p) {
-  return deps ? typeof deps === 'function' ? deps(p) : deps.map(function (x) {
-    return p[x];
-  }) : null;
-};
-
 var withEffect = function withEffect(effect, cleanup, deps, useLayout) {
   return function (p) {
     return effect && (useLayout ? _react.useLayoutEffect : _react.useEffect)(function () {
@@ -66,7 +64,7 @@ var withEffect = function withEffect(effect, cleanup, deps, useLayout) {
       return cleanup ? function () {
         return cleanup(p, id);
       } : undefined;
-    }, getDeps(deps, p));
+    }, f(deps, p));
   };
 };
 
@@ -78,6 +76,10 @@ var withLayoutEffect = function withLayoutEffect(effect, cleanup, deps) {
 
 exports.withLayoutEffect = withLayoutEffect;
 
+var getElementsFromSelector = function getElementsFromSelector(selector) {
+  return !selector ? [window] : typeof selector === 'string' ? document.querySelectorAll(selector) : [selector];
+};
+
 var withEventHandler = function withEventHandler(selector, event, handler, deps) {
   return function (p) {
     return (0, _react.useEffect)(function () {
@@ -87,7 +89,7 @@ var withEventHandler = function withEventHandler(selector, event, handler, deps)
         }));
       };
 
-      var elements = selector ? document.querySelectorAll(selector) : [window];
+      var elements = getElementsFromSelector(selector);
       elements.forEach(function (e) {
         return e.addEventListener(event, h);
       });
@@ -96,7 +98,7 @@ var withEventHandler = function withEventHandler(selector, event, handler, deps)
           return e.removeEventListener(event, h);
         });
       };
-    }, getDeps(deps, p));
+    }, f(deps, p));
   };
 };
 
@@ -115,7 +117,7 @@ var withInterval = function withInterval(func, delay, deps) {
     }, delay);
   }, function (p, id) {
     return clearInterval(id);
-  }, deps);
+  }, f(deps, p));
 };
 
 exports.withInterval = withInterval;
@@ -147,7 +149,7 @@ var withMemo = function withMemo(func, deps) {
   return function (p) {
     return (0, _react.useMemo)(function () {
       return func(p);
-    }, getDeps(deps, p));
+    }, f(deps, p));
   };
 };
 
@@ -161,16 +163,53 @@ var withRef = function withRef(name, initialValue) {
 
 exports.withRef = withRef;
 
-var withFetch = function withFetch(prop, url, deps) {
+var formatUrl = function formatUrl(url, params) {
+  return Object.entries(params).reduce(function (p, _ref5) {
+    var _ref6 = _slicedToArray(_ref5, 2),
+        k = _ref6[0],
+        v = _ref6[1];
+
+    return p.replace(new RegExp("{".concat(k, "}"), 'g'), v);
+  }, url);
+};
+
+var withFetch = function withFetch(_ref7, deps) {
+  var prop = _ref7.prop,
+      _ref7$method = _ref7.method,
+      method = _ref7$method === void 0 ? 'get' : _ref7$method,
+      url = _ref7.url,
+      _ref7$params = _ref7.params,
+      params = _ref7$params === void 0 ? {} : _ref7$params,
+      _ref7$body = _ref7.body,
+      body = _ref7$body === void 0 ? {} : _ref7$body,
+      _ref7$headers = _ref7.headers,
+      headers = _ref7$headers === void 0 ? {} : _ref7$headers,
+      transform = _ref7.transform;
   return function (p) {
     return (0, _react.useEffect)(function () {
-      fetch(url(p)).then(function (r) {
+      fetch(formatUrl(url, f(params, p)), {
+        method: method,
+        headers: f(headers, p),
+        body: f(body, p)
+      }).then(function (r) {
         return r.json();
+      }).then(function (r) {
+        return transform ? transform(r) : r;
       }).then(function (r) {
         return p['set' + prop[0].toUpperCase() + prop.slice(1)](r);
       })["catch"](console.log);
-    }, getDeps(deps, p));
+    }, f(deps, p));
   };
 };
 
 exports.withFetch = withFetch;
+var withGet = withFetch;
+exports.withGet = withGet;
+
+var withPost = function withPost(p, deps) {
+  return withFetch(_objectSpread({}, p, {
+    method: 'post'
+  }), deps);
+};
+
+exports.withPost = withPost;
