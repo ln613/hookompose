@@ -183,7 +183,8 @@ var withFetch = function withFetch(_ref7, deps) {
       body = _ref7.body,
       _ref7$headers = _ref7.headers,
       headers = _ref7$headers === void 0 ? {} : _ref7$headers,
-      transform = _ref7.transform;
+      transform = _ref7.transform,
+      done = _ref7.done;
   return function (p) {
     return (0, _react.useEffect)(function () {
       fetch(formatUrl(url, f(params, p)), {
@@ -195,7 +196,7 @@ var withFetch = function withFetch(_ref7, deps) {
       }).then(function (r) {
         return transform ? transform(r) : r;
       }).then(function (r) {
-        return p['set' + prop[0].toUpperCase() + prop.slice(1)](r);
+        return done ? done(r) : p['set' + prop[0].toUpperCase() + prop.slice(1)](r);
       })["catch"](console.log);
     }, f(deps, p));
   };
