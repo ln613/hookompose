@@ -198,7 +198,11 @@ var withFetch = function withFetch(_ref7, deps) {
         }).then(function (r) {
           return transform ? transform(r) : r;
         }).then(function (r) {
-          done ? done(r) : p['set' + prop[0].toUpperCase() + prop.slice(1)](r);
+          if (done) {
+            done(r);
+          } else if (prop) {
+            p['set' + prop[0].toUpperCase() + prop.slice(1)](r);
+          }
         })["catch"](console.log);
       }
     }, f(deps, p));
