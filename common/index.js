@@ -190,7 +190,7 @@ var withFetch = function withFetch(_ref7, deps) {
       fetch(formatUrl(url, f(params, p)), {
         method: method,
         headers: f(headers, p),
-        body: f(body, p)
+        body: JSON.stringify(f(body, p))
       }).then(function (r) {
         return r.json();
       }).then(function (r) {

@@ -72,7 +72,7 @@ const formatUrl = (url, params) => Object.entries(params).reduce((p, [k, v]) => 
   
 export const withFetch = ({ prop, method = 'get', url, params = {}, body, headers = {}, transform, done }, deps) => p =>
   useEffect(() => {
-    fetch(formatUrl(url, f(params, p)), { method, headers: f(headers, p), body: f(body, p) })
+    fetch(formatUrl(url, f(params, p)), { method, headers: f(headers, p), body: JSON.stringify(f(body, p)) })
       .then(r => r.json())
       .then(r => transform ? transform(r) : r)
       .then(r => done ? done(r) : p['set' + prop[0].toUpperCase() + prop.slice(1)](r))
