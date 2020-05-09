@@ -75,10 +75,10 @@ export const withFetch = ({ prop, method = 'get', url, params = {}, body, header
     if (!cond || cond(p)) { 
       fetch(formatUrl(url, f(params, p)), { method, headers: f(headers, p), body: JSON.stringify(f(body, p)) })
         .then(r => r.json())
-        .then(r => transform ? transform(r) : r)
+        .then(r => transform ? transform(r, p) : r)
         .then(r => {
           if (done) {
-            done(r)
+            done(r, p)
           }
           else if (prop) {
             p['set' + prop[0].toUpperCase() + prop.slice(1)](r)

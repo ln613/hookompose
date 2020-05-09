@@ -196,10 +196,10 @@ var withFetch = function withFetch(_ref7, deps) {
         }).then(function (r) {
           return r.json();
         }).then(function (r) {
-          return transform ? transform(r) : r;
+          return transform ? transform(r, p) : r;
         }).then(function (r) {
           if (done) {
-            done(r);
+            done(r, p);
           } else if (prop) {
             p['set' + prop[0].toUpperCase() + prop.slice(1)](r);
           }
