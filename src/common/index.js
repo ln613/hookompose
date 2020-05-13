@@ -85,11 +85,12 @@ export const withFetch = ({ prop, method = 'get', url, params = {}, body, header
       .then(r => {
         done && done(r, p);
         prop && p['set' + prop[0].toUpperCase() + prop.slice(1)](r);
-        p.setIsLoading && p.setIsLoading(true);
+        p.setIsLoading && p.setIsLoading(false);
       })
       .catch(e => {
         console.log(e);
-        p.setIsLoading && p.setIsLoading(true);
+        p.setError && p.setError(e);
+        p.setIsLoading && p.setIsLoading(false);
       })
     }
   }, f(deps, p))
