@@ -75,7 +75,8 @@ export const withFetch = ({ prop, method = 'get', url, params = {}, body, header
     if (!cond || cond(p)) {
       p.setIsLoading && p.setIsLoading(true);
       
-      fetch(formatUrl(url, f(params, p)), {
+      url = formatUrl(url, f(params, p));
+      fetch(url, {
         method,
         headers: f(headers, p),
         body: JSON.stringify(f(body, p))
@@ -83,6 +84,7 @@ export const withFetch = ({ prop, method = 'get', url, params = {}, body, header
       .then(r => r.json())
       .then(r => transform ? transform(r, p) : r)
       .then(r => {
+        console.log(`request ${url} finished.`);
         done && done(r, p);
         prop && p['set' + prop[0].toUpperCase() + prop.slice(1)](r);
         p.setIsLoading && p.setIsLoading(false);

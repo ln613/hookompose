@@ -190,7 +190,8 @@ var withFetch = function withFetch(_ref7, deps) {
     return (0, _react.useEffect)(function () {
       if (!cond || cond(p)) {
         p.setIsLoading && p.setIsLoading(true);
-        fetch(formatUrl(url, f(params, p)), {
+        url = formatUrl(url, f(params, p));
+        fetch(url, {
           method: method,
           headers: f(headers, p),
           body: JSON.stringify(f(body, p))
@@ -199,6 +200,7 @@ var withFetch = function withFetch(_ref7, deps) {
         }).then(function (r) {
           return transform ? transform(r, p) : r;
         }).then(function (r) {
+          console.log("request ".concat(url, " finished."));
           done && done(r, p);
           prop && p['set' + prop[0].toUpperCase() + prop.slice(1)](r);
           p.setIsLoading && p.setIsLoading(false);
