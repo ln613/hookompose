@@ -201,10 +201,11 @@ var withFetch = function withFetch(_ref7, deps) {
         }).then(function (r) {
           done && done(r, p);
           prop && p['set' + prop[0].toUpperCase() + prop.slice(1)](r);
-          p.setIsLoading && p.setIsLoading(true);
+          p.setIsLoading && p.setIsLoading(false);
         })["catch"](function (e) {
           console.log(e);
-          p.setIsLoading && p.setIsLoading(true);
+          p.setError && p.setError(e);
+          p.setIsLoading && p.setIsLoading(false);
         });
       }
     }, f(deps, p));
