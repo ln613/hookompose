@@ -1,11 +1,21 @@
 "use strict";
 
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.withPost = exports.withGet = exports.withFetch = exports.withRef = exports.withMemo = exports.withReducer = exports.withContext = exports.withInterval = exports.withWindowEventHandler = exports.withEventHandler = exports.withLayoutEffect = exports.withEffect = exports.withState = exports.compose = void 0;
+exports.withPost = exports.withGet = exports.withFetch = exports.withRef = exports.withMemo = exports.Provider = exports.withReducer = exports.withContext = exports.withInterval = exports.withWindowEventHandler = exports.withEventHandler = exports.withLayoutEffect = exports.withEffect = exports.withState = exports.compose = void 0;
 
-var _react = require("react");
+var _react = _interopRequireWildcard(require("react"));
+
+var _lodash = _interopRequireDefault(require("lodash.set"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
@@ -27,6 +37,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 var f = function f(v, p) {
   return typeof v === 'function' ? v(p) : v;
+};
+
+var RootContext = (0, _react.createContext)();
+
+var rootReducer = function rootReducer(s, a) {
+  switch (a.type) {
+    case 'set':
+      return (0, _lodash["default"])(s, a.path, a.value);
+
+    default:
+      return state;
+  }
 };
 
 var compose = function compose() {
@@ -145,6 +167,25 @@ var withReducer = function withReducer(reducer, initialValue, stateName, dispatc
 
 exports.withReducer = withReducer;
 
+var Provider = function Provider(_ref4) {
+  var initialValue = _ref4.initialValue,
+      children = _ref4.children;
+
+  var _useReducer3 = (0, _react.useReducer)(rootReducer, initialValue),
+      _useReducer4 = _slicedToArray(_useReducer3, 2),
+      state = _useReducer4[0],
+      dispatch = _useReducer4[1];
+
+  return /*#__PURE__*/_react["default"].createElement(RootContext.Provider, {
+    value: {
+      state: state,
+      dispatch: dispatch
+    }
+  }, children);
+};
+
+exports.Provider = Provider;
+
 var withMemo = function withMemo(func, deps) {
   return function (p) {
     return (0, _react.useMemo)(function () {
@@ -164,28 +205,28 @@ var withRef = function withRef(name, initialValue) {
 exports.withRef = withRef;
 
 var formatUrl = function formatUrl(url, params) {
-  return Object.entries(params).reduce(function (p, _ref5) {
-    var _ref6 = _slicedToArray(_ref5, 2),
-        k = _ref6[0],
-        v = _ref6[1];
+  return Object.entries(params).reduce(function (p, _ref6) {
+    var _ref7 = _slicedToArray(_ref6, 2),
+        k = _ref7[0],
+        v = _ref7[1];
 
     return p.replace(new RegExp("{".concat(k, "}"), 'g'), v);
   }, url);
 };
 
-var withFetch = function withFetch(_ref7, deps) {
-  var prop = _ref7.prop,
-      _ref7$method = _ref7.method,
-      method = _ref7$method === void 0 ? 'get' : _ref7$method,
-      url = _ref7.url,
-      _ref7$params = _ref7.params,
-      params = _ref7$params === void 0 ? {} : _ref7$params,
-      body = _ref7.body,
-      _ref7$headers = _ref7.headers,
-      headers = _ref7$headers === void 0 ? {} : _ref7$headers,
-      transform = _ref7.transform,
-      done = _ref7.done,
-      cond = _ref7.cond;
+var withFetch = function withFetch(_ref8, deps) {
+  var prop = _ref8.prop,
+      _ref8$method = _ref8.method,
+      method = _ref8$method === void 0 ? 'get' : _ref8$method,
+      url = _ref8.url,
+      _ref8$params = _ref8.params,
+      params = _ref8$params === void 0 ? {} : _ref8$params,
+      body = _ref8.body,
+      _ref8$headers = _ref8.headers,
+      headers = _ref8$headers === void 0 ? {} : _ref8$headers,
+      transform = _ref8.transform,
+      done = _ref8.done,
+      cond = _ref8.cond;
   return function (p) {
     return (0, _react.useEffect)(function () {
       if (!cond || cond(p)) {

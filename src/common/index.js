@@ -1,7 +1,19 @@
-import { useState, useEffect, useLayoutEffect, useContext, useReducer, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useContext, useReducer, useMemo, useRef, createContext } from 'react';
+import set from 'lodash.set';
 
 const f = (v, p) =>
   typeof v === 'function' ? v(p) : v
+
+const RootContext = createContext();
+
+const rootReducer = (s, a) => {
+  switch (a.type) {
+    case 'set':
+      return set(s, a.path, a.value);
+    default:
+      return state;
+  }
+}
 
 export const compose = (...fns) => Comp => p =>
   Comp(fns.reduce((r, n) => ({ ...r, ...n(r) }), p));
@@ -61,12 +73,20 @@ export const withReducer = (reducer, initialValue, stateName, dispatchName) => p
   };
 };
 
+export const Provider = ({ initialValue, children }) => {
+  const [state, dispatch] = useReducer(rootReducer, initialValue);
+  return (
+    <RootContext.Provider value={{ state, dispatch }}>
+      {children}
+    </RootContext.Provider>
+  );
+}
+
 export const withMemo = (func, deps) => p =>
   useMemo(() => func(p), f(deps, p));
 
 export const withRef = (name, initialValue) => () =>
   ({ [name]: useRef(initialValue || null) });
-
 
 const formatUrl = (url, params) => Object.entries(params).reduce((p, [k, v]) => p.replace(new RegExp(`{${k}}`, 'g'), v), url)
   
@@ -96,7 +116,6 @@ export const withFetch = ({ prop, method = 'get', url, params = {}, body, header
       })
     }
   }, f(deps, p))
-
 
 export const withGet = withFetch
 
