@@ -82,6 +82,11 @@ export const Provider = ({ initialValue, children }) => {
   );
 }
 
+export const withStore = selector => p => {
+  const ctx = useContext(RootContext);
+  return { ...selector(ctx), set: (path, value) => p.dispatch({ type: 'set', path, value }) };
+}
+
 export const withMemo = (func, deps) => p =>
   useMemo(() => func(p), f(deps, p));
 

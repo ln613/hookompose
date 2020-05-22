@@ -5,7 +5,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.withPost = exports.withGet = exports.withFetch = exports.withRef = exports.withMemo = exports.Provider = exports.withReducer = exports.withContext = exports.withInterval = exports.withWindowEventHandler = exports.withEventHandler = exports.withLayoutEffect = exports.withEffect = exports.withState = exports.compose = void 0;
+exports.withPost = exports.withGet = exports.withFetch = exports.withRef = exports.withMemo = exports.withStore = exports.Provider = exports.withReducer = exports.withContext = exports.withInterval = exports.withWindowEventHandler = exports.withEventHandler = exports.withLayoutEffect = exports.withEffect = exports.withState = exports.compose = void 0;
 
 var _react = _interopRequireWildcard(require("react"));
 
@@ -185,6 +185,23 @@ var Provider = function Provider(_ref4) {
 };
 
 exports.Provider = Provider;
+
+var withStore = function withStore(selector) {
+  return function (p) {
+    var ctx = (0, _react.useContext)(RootContext);
+    return _objectSpread({}, selector(ctx), {
+      set: function set(path, value) {
+        return p.dispatch({
+          type: 'set',
+          path: path,
+          value: value
+        });
+      }
+    });
+  };
+};
+
+exports.withStore = withStore;
 
 var withMemo = function withMemo(func, deps) {
   return function (p) {
