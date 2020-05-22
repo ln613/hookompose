@@ -83,7 +83,7 @@ export const Provider = ({ initialValue, children }) => {
 }
 
 export const withStore = selector => p => {
-  const [state, dispatch] = useContext(RootContext);
+  const {state, dispatch} = useContext(RootContext);
   return { ...selector(state), set: (path, value) => dispatch({ type: 'set', path, value }) };
 }
 

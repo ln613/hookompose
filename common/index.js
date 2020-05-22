@@ -189,9 +189,8 @@ exports.Provider = Provider;
 var withStore = function withStore(selector) {
   return function (p) {
     var _useContext = (0, _react.useContext)(RootContext),
-        _useContext2 = _slicedToArray(_useContext, 2),
-        state = _useContext2[0],
-        dispatch = _useContext2[1];
+        state = _useContext.state,
+        dispatch = _useContext.dispatch;
 
     return _objectSpread({}, selector(state), {
       set: function set(path, value) {
