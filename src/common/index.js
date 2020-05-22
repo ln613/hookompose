@@ -83,8 +83,8 @@ export const Provider = ({ initialValue, children }) => {
 }
 
 export const withStore = selector => p => {
-  const ctx = useContext(RootContext);
-  return { ...selector(ctx), set: (path, value) => p.dispatch({ type: 'set', path, value }) };
+  const [state, dispatch] = useContext(RootContext);
+  return { ...selector(state), set: (path, value) => dispatch({ type: 'set', path, value }) };
 }
 
 export const withMemo = (func, deps) => p =>
