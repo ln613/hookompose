@@ -9,9 +9,7 @@ exports.withPost = exports.withGet = exports.withFetch = exports.withRef = expor
 
 var _react = _interopRequireWildcard(require("react"));
 
-var _lodash = _interopRequireDefault(require("lodash.set"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+var _fp = require("lodash/fp");
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
 
@@ -44,10 +42,10 @@ var RootContext = (0, _react.createContext)();
 var rootReducer = function rootReducer(s, a) {
   switch (a.type) {
     case 'set':
-      return (0, _lodash["default"])(s, a.path, a.value);
+      return (0, _fp.set)(a.path, a.value, s);
 
     default:
-      return state;
+      return s;
   }
 };
 

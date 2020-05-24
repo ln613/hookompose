@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect, useContext, useReducer, useMemo, useRef, createContext } from 'react';
-import set from 'lodash.set';
+import { set } from 'lodash/fp';
 
 const f = (v, p) =>
   typeof v === 'function' ? v(p) : v
@@ -9,9 +9,9 @@ const RootContext = createContext();
 const rootReducer = (s, a) => {
   switch (a.type) {
     case 'set':
-      return set(s, a.path, a.value);
+      return set(a.path, a.value, s);
     default:
-      return state;
+      return s;
   }
 }
 
