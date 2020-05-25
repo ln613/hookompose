@@ -1,22 +1,14 @@
-import React, { useState, useEffect, useLayoutEffect, useContext, useReducer, useMemo, useRef, createContext } from 'react';
-import { set } from 'lodash/fp';
+import { useState, useEffect, useLayoutEffect, useContext, useReducer, useMemo, useRef } from 'react';
+import { flatten } from 'ramda';
+
+export { http, withFetch, withGet, withPost } from './http';
+export { withStore, Provider } from './store';
 
 const f = (v, p) =>
   typeof v === 'function' ? v(p) : v
 
-const RootContext = createContext();
-
-const rootReducer = (s, a) => {
-  switch (a.type) {
-    case 'set':
-      return set(a.path, a.value, s);
-    default:
-      return s;
-  }
-}
-
 export const compose = (...fns) => Comp => p =>
-  Comp(fns.reduce((r, n) => ({ ...r, ...n(r) }), p));
+  Comp(flatten(fns).reduce((r, n) => ({ ...r, ...n(r) }), p));
 
 export const withState = (name, value) => p => {
   if (!name) return {};
@@ -71,25 +63,6 @@ export const withReducer = (reducer, initialValue, stateName, dispatchName) => p
     [stateName || 'state']: state,
     [dispatchName || 'dispatch']: dispatch
   };
-};
-
-const commonState = {
-  isLoading: false,
-  error: null
-}
-
-export const Provider = ({ initialValue, children }) => {
-  const [state, dispatch] = useReducer(rootReducer, {...commonState, ...initialValue});
-  return (
-    <RootContext.Provider value={{ state, dispatch }}>
-      {children}
-    </RootContext.Provider>
-  );
-}
-
-export const withStore = selector => p => {
-  const {state, dispatch} = useContext(RootContext);
-  return { ...selector(state), set: (path, value) => dispatch({ type: 'set', path, value }) };
 }
 
 export const withMemo = (func, deps) => p =>
@@ -97,36 +70,4 @@ export const withMemo = (func, deps) => p =>
 
 export const withRef = (name, initialValue) => () =>
   ({ [name]: useRef(initialValue || null) });
-
-const formatUrl = (url, params) => Object.entries(params).reduce((p, [k, v]) => p.replace(new RegExp(`{${k}}`, 'g'), v), url)
   
-export const withFetch = ({ prop, method = 'get', url, params = {}, body, headers = {}, transform, done, cond }, deps) => p =>
-  useEffect(() => {
-    if (!cond || cond(p)) {
-      p.set('isLoading', true);
-      
-      url = formatUrl(url, f(params, p));
-      fetch(url, {
-        method,
-        headers: f(headers, p),
-        body: JSON.stringify(f(body, p))
-      })
-      .then(r => r.json())
-      .then(r => transform ? transform(r, p) : r)
-      .then(r => {
-        console.log(`request ${url} finished.`);
-        done && done(r, p);
-        prop && p['set' + prop[0].toUpperCase() + prop.slice(1)](r);
-        p.set('isLoading', false);
-      })
-      .catch(e => {
-        console.log(e);
-        p.set('error', e);
-        p.set('isLoading', false);
-      })
-    }
-  }, f(deps, p))
-
-export const withGet = withFetch
-
-export const withPost = (p, deps) => withFetch({ ...p, method: 'post' }, deps)

@@ -1,19 +1,53 @@
 "use strict";
 
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.withPost = exports.withGet = exports.withFetch = exports.withRef = exports.withMemo = exports.withStore = exports.Provider = exports.withReducer = exports.withContext = exports.withInterval = exports.withWindowEventHandler = exports.withEventHandler = exports.withLayoutEffect = exports.withEffect = exports.withState = exports.compose = void 0;
+Object.defineProperty(exports, "http", {
+  enumerable: true,
+  get: function get() {
+    return _http.http;
+  }
+});
+Object.defineProperty(exports, "withFetch", {
+  enumerable: true,
+  get: function get() {
+    return _http.withFetch;
+  }
+});
+Object.defineProperty(exports, "withGet", {
+  enumerable: true,
+  get: function get() {
+    return _http.withGet;
+  }
+});
+Object.defineProperty(exports, "withPost", {
+  enumerable: true,
+  get: function get() {
+    return _http.withPost;
+  }
+});
+Object.defineProperty(exports, "withStore", {
+  enumerable: true,
+  get: function get() {
+    return _store.withStore;
+  }
+});
+Object.defineProperty(exports, "Provider", {
+  enumerable: true,
+  get: function get() {
+    return _store.Provider;
+  }
+});
+exports.withRef = exports.withMemo = exports.withReducer = exports.withContext = exports.withInterval = exports.withWindowEventHandler = exports.withEventHandler = exports.withLayoutEffect = exports.withEffect = exports.withState = exports.compose = void 0;
 
-var _react = _interopRequireWildcard(require("react"));
+var _react = require("react");
 
-var _fp = require("lodash/fp");
+var _ramda = require("ramda");
 
-function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
+var _http = require("./http");
 
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+var _store = require("./store");
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
@@ -37,18 +71,6 @@ var f = function f(v, p) {
   return typeof v === 'function' ? v(p) : v;
 };
 
-var RootContext = (0, _react.createContext)();
-
-var rootReducer = function rootReducer(s, a) {
-  switch (a.type) {
-    case 'set':
-      return (0, _fp.set)(a.path, a.value, s);
-
-    default:
-      return s;
-  }
-};
-
 var compose = function compose() {
   for (var _len = arguments.length, fns = new Array(_len), _key = 0; _key < _len; _key++) {
     fns[_key] = arguments[_key];
@@ -56,7 +78,7 @@ var compose = function compose() {
 
   return function (Comp) {
     return function (p) {
-      return Comp(fns.reduce(function (r, n) {
+      return Comp((0, _ramda.flatten)(fns).reduce(function (r, n) {
         return _objectSpread({}, r, {}, n(r));
       }, p));
     };
@@ -164,49 +186,6 @@ var withReducer = function withReducer(reducer, initialValue, stateName, dispatc
 };
 
 exports.withReducer = withReducer;
-var commonState = {
-  isLoading: false,
-  error: null
-};
-
-var Provider = function Provider(_ref4) {
-  var initialValue = _ref4.initialValue,
-      children = _ref4.children;
-
-  var _useReducer3 = (0, _react.useReducer)(rootReducer, _objectSpread({}, commonState, {}, initialValue)),
-      _useReducer4 = _slicedToArray(_useReducer3, 2),
-      state = _useReducer4[0],
-      dispatch = _useReducer4[1];
-
-  return /*#__PURE__*/_react["default"].createElement(RootContext.Provider, {
-    value: {
-      state: state,
-      dispatch: dispatch
-    }
-  }, children);
-};
-
-exports.Provider = Provider;
-
-var withStore = function withStore(selector) {
-  return function (p) {
-    var _useContext = (0, _react.useContext)(RootContext),
-        state = _useContext.state,
-        dispatch = _useContext.dispatch;
-
-    return _objectSpread({}, selector(state), {
-      set: function set(path, value) {
-        return dispatch({
-          type: 'set',
-          path: path,
-          value: value
-        });
-      }
-    });
-  };
-};
-
-exports.withStore = withStore;
 
 var withMemo = function withMemo(func, deps) {
   return function (p) {
@@ -225,66 +204,3 @@ var withRef = function withRef(name, initialValue) {
 };
 
 exports.withRef = withRef;
-
-var formatUrl = function formatUrl(url, params) {
-  return Object.entries(params).reduce(function (p, _ref6) {
-    var _ref7 = _slicedToArray(_ref6, 2),
-        k = _ref7[0],
-        v = _ref7[1];
-
-    return p.replace(new RegExp("{".concat(k, "}"), 'g'), v);
-  }, url);
-};
-
-var withFetch = function withFetch(_ref8, deps) {
-  var prop = _ref8.prop,
-      _ref8$method = _ref8.method,
-      method = _ref8$method === void 0 ? 'get' : _ref8$method,
-      url = _ref8.url,
-      _ref8$params = _ref8.params,
-      params = _ref8$params === void 0 ? {} : _ref8$params,
-      body = _ref8.body,
-      _ref8$headers = _ref8.headers,
-      headers = _ref8$headers === void 0 ? {} : _ref8$headers,
-      transform = _ref8.transform,
-      done = _ref8.done,
-      cond = _ref8.cond;
-  return function (p) {
-    return (0, _react.useEffect)(function () {
-      if (!cond || cond(p)) {
-        p.set('isLoading', true);
-        url = formatUrl(url, f(params, p));
-        fetch(url, {
-          method: method,
-          headers: f(headers, p),
-          body: JSON.stringify(f(body, p))
-        }).then(function (r) {
-          return r.json();
-        }).then(function (r) {
-          return transform ? transform(r, p) : r;
-        }).then(function (r) {
-          console.log("request ".concat(url, " finished."));
-          done && done(r, p);
-          prop && p['set' + prop[0].toUpperCase() + prop.slice(1)](r);
-          p.set('isLoading', false);
-        })["catch"](function (e) {
-          console.log(e);
-          p.set('error', e);
-          p.set('isLoading', false);
-        });
-      }
-    }, f(deps, p));
-  };
-};
-
-exports.withFetch = withFetch;
-var withGet = withFetch;
-exports.withGet = withGet;
-
-var withPost = function withPost(p, deps) {
-  return withFetch(_objectSpread({}, p, {
-    method: 'post'
-  }), deps);
-};
-
-exports.withPost = withPost;
