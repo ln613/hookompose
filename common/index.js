@@ -164,12 +164,16 @@ var withReducer = function withReducer(reducer, initialValue, stateName, dispatc
 };
 
 exports.withReducer = withReducer;
+var commonState = {
+  isLoading: false,
+  error: null
+};
 
 var Provider = function Provider(_ref4) {
   var initialValue = _ref4.initialValue,
       children = _ref4.children;
 
-  var _useReducer3 = (0, _react.useReducer)(rootReducer, initialValue),
+  var _useReducer3 = (0, _react.useReducer)(rootReducer, _objectSpread({}, commonState, {}, initialValue)),
       _useReducer4 = _slicedToArray(_useReducer3, 2),
       state = _useReducer4[0],
       dispatch = _useReducer4[1];
@@ -248,7 +252,7 @@ var withFetch = function withFetch(_ref8, deps) {
   return function (p) {
     return (0, _react.useEffect)(function () {
       if (!cond || cond(p)) {
-        p.setIsLoading && p.setIsLoading(true);
+        p.set('isLoading', true);
         url = formatUrl(url, f(params, p));
         fetch(url, {
           method: method,
@@ -262,11 +266,11 @@ var withFetch = function withFetch(_ref8, deps) {
           console.log("request ".concat(url, " finished."));
           done && done(r, p);
           prop && p['set' + prop[0].toUpperCase() + prop.slice(1)](r);
-          p.setIsLoading && p.setIsLoading(false);
+          p.set('isLoading', false);
         })["catch"](function (e) {
           console.log(e);
-          p.setError && p.setError(e);
-          p.setIsLoading && p.setIsLoading(false);
+          p.set('error', e);
+          p.set('isLoading', false);
         });
       }
     }, f(deps, p));

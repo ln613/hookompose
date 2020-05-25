@@ -73,8 +73,13 @@ export const withReducer = (reducer, initialValue, stateName, dispatchName) => p
   };
 };
 
+const commonState = {
+  isLoading: false,
+  error: null
+}
+
 export const Provider = ({ initialValue, children }) => {
-  const [state, dispatch] = useReducer(rootReducer, initialValue);
+  const [state, dispatch] = useReducer(rootReducer, {...commonState, ...initialValue});
   return (
     <RootContext.Provider value={{ state, dispatch }}>
       {children}
@@ -98,7 +103,7 @@ const formatUrl = (url, params) => Object.entries(params).reduce((p, [k, v]) => 
 export const withFetch = ({ prop, method = 'get', url, params = {}, body, headers = {}, transform, done, cond }, deps) => p =>
   useEffect(() => {
     if (!cond || cond(p)) {
-      p.setIsLoading && p.setIsLoading(true);
+      p.set('isLoading', true);
       
       url = formatUrl(url, f(params, p));
       fetch(url, {
@@ -112,12 +117,12 @@ export const withFetch = ({ prop, method = 'get', url, params = {}, body, header
         console.log(`request ${url} finished.`);
         done && done(r, p);
         prop && p['set' + prop[0].toUpperCase() + prop.slice(1)](r);
-        p.setIsLoading && p.setIsLoading(false);
+        p.set('isLoading', false);
       })
       .catch(e => {
         console.log(e);
-        p.setError && p.setError(e);
-        p.setIsLoading && p.setIsLoading(false);
+        p.set('error', e);
+        p.set('isLoading', false);
       })
     }
   }, f(deps, p))
