@@ -29,8 +29,8 @@ export const http = ({ path, method = 'get', url, params = {}, body, headers = {
 }
 
 export const withFetch = req => p =>
-  useEffect(() => http(req)(p), f(deps, p))
+  useEffect(() => http(req)(p), f(req.deps, p))
 
 export const withGet = withFetch
 
-export const withPost = (p, deps) => withFetch({ ...p, method: 'post' }, deps)
+export const withPost = req => withFetch({ ...req, method: 'post' })

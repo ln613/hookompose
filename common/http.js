@@ -81,7 +81,7 @@ var withFetch = function withFetch(req) {
   return function (p) {
     return (0, _react.useEffect)(function () {
       return http(req)(p);
-    }, (0, _utils.f)(deps, p));
+    }, (0, _utils.f)(req.deps, p));
   };
 };
 
@@ -89,10 +89,10 @@ exports.withFetch = withFetch;
 var withGet = withFetch;
 exports.withGet = withGet;
 
-var withPost = function withPost(p, deps) {
-  return withFetch(_objectSpread({}, p, {
+var withPost = function withPost(req) {
+  return withFetch(_objectSpread({}, req, {
     method: 'post'
-  }), deps);
+  }));
 };
 
 exports.withPost = withPost;
