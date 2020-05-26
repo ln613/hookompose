@@ -45,6 +45,8 @@ var _react = require("react");
 
 var _ramda = require("ramda");
 
+var _utils = require("./utils");
+
 var _http = require("./http");
 
 var _store = require("./store");
@@ -66,10 +68,6 @@ function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (O
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-var f = function f(v, p) {
-  return typeof v === 'function' ? v(p) : v;
-};
 
 var compose = function compose() {
   for (var _len = arguments.length, fns = new Array(_len), _key = 0; _key < _len; _key++) {
@@ -106,7 +104,7 @@ var withEffect = function withEffect(effect, cleanup, deps, useLayout) {
       return cleanup ? function () {
         return cleanup(p, id);
       } : undefined;
-    }, f(deps, p));
+    }, (0, _utils.f)(deps, p));
   };
 };
 
@@ -140,7 +138,7 @@ var withEventHandler = function withEventHandler(selector, event, handler, deps)
           return e.removeEventListener(event, h);
         });
       };
-    }, f(deps, p));
+    }, (0, _utils.f)(deps, p));
   };
 };
 
@@ -159,7 +157,7 @@ var withInterval = function withInterval(func, delay, deps) {
     }, delay);
   }, function (p, id) {
     return clearInterval(id);
-  }, f(deps, p));
+  }, (0, _utils.f)(deps, p));
 };
 
 exports.withInterval = withInterval;
@@ -191,7 +189,7 @@ var withMemo = function withMemo(func, deps) {
   return function (p) {
     return (0, _react.useMemo)(function () {
       return func(p);
-    }, f(deps, p));
+    }, (0, _utils.f)(deps, p));
   };
 };
 

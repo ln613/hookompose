@@ -1,11 +1,9 @@
 import { useState, useEffect, useLayoutEffect, useContext, useReducer, useMemo, useRef } from 'react';
 import { flatten } from 'ramda';
+import { f } from './utils';
 
 export { http, withFetch, withGet, withPost } from './http';
 export { withStore, Provider } from './store';
-
-const f = (v, p) =>
-  typeof v === 'function' ? v(p) : v
 
 export const compose = (...fns) => Comp => p =>
   Comp(flatten(fns).reduce((r, n) => ({ ...r, ...n(r) }), p));

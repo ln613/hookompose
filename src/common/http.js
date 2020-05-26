@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { f } from './utils';
 
 const formatUrl = (url, params) => Object.entries(params).reduce((p, [k, v]) => p.replace(new RegExp(`{${k}}`, 'g'), v), url)
 

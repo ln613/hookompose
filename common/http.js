@@ -7,6 +7,8 @@ exports.withPost = exports.withGet = exports.withFetch = exports.http = void 0;
 
 var _react = require("react");
 
+var _utils = require("./utils");
+
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -51,11 +53,11 @@ var http = function http(_ref3) {
   return function (p) {
     if (!cond || cond(p)) {
       p.set('isLoading', true);
-      url = formatUrl(url, f(params, p));
+      url = formatUrl(url, (0, _utils.f)(params, p));
       fetch(url, {
         method: method,
-        headers: f(headers, p),
-        body: JSON.stringify(f(body, p))
+        headers: (0, _utils.f)(headers, p),
+        body: JSON.stringify((0, _utils.f)(body, p))
       }).then(function (r) {
         return r.json();
       }).then(function (r) {
@@ -79,7 +81,7 @@ var withFetch = function withFetch(req) {
   return function (p) {
     return (0, _react.useEffect)(function () {
       return http(req)(p);
-    }, f(deps, p));
+    }, (0, _utils.f)(deps, p));
   };
 };
 
