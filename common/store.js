@@ -50,7 +50,8 @@ var RootContext = (0, _react.createContext)();
 var rootReducer = function rootReducer(s, a) {
   switch (a.type) {
     case 'set':
-      return (0, _fp.set)(a.path, a.value, s);
+      var value = typeof a.value === 'function' ? a.value((0, _fp.get)(a.path, s), s) : a.value;
+      return (0, _fp.set)(a.path, value, s);
 
     default:
       return s;

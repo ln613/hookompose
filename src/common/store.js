@@ -1,6 +1,6 @@
 import React, { useContext, useReducer,createContext } from 'react';
 import { map } from 'ramda';
-import { set as _set } from 'lodash/fp';
+import { set as _set, get as _get } from 'lodash/fp';
 import { http, withFetch } from './http';
 
 const RootContext = createContext();
@@ -8,7 +8,8 @@ const RootContext = createContext();
 const rootReducer = (s, a) => {
   switch (a.type) {
     case 'set':
-      return _set(a.path, a.value, s);
+      const value = typeof a.value === 'function' ? a.value(_get(a.path, s), s) : a.value;
+      return _set(a.path, value, s);
     default:
       return s;
   }
