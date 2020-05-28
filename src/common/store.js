@@ -1,6 +1,6 @@
 import React, { useContext, useReducer,createContext } from 'react';
 import { map } from 'ramda';
-import { update } from 'ipath';
+import { update } from '@ln613/ipath';
 import { http, withFetch } from './http';
 
 const RootContext = createContext();

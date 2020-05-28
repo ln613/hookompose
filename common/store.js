@@ -11,7 +11,7 @@ var _react = _interopRequireWildcard(require("react"));
 
 var _ramda = require("ramda");
 
-var _ipath = require("ipath");
+var _ipath = require("@ln613/ipath");
 
 var _http = require("./http");
 
