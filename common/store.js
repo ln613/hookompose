@@ -11,7 +11,7 @@ var _react = _interopRequireWildcard(require("react"));
 
 var _ramda = require("ramda");
 
-var _fp = require("lodash/fp");
+var _ipath = require("ipath");
 
 var _http = require("./http");
 
@@ -50,8 +50,7 @@ var RootContext = (0, _react.createContext)();
 var rootReducer = function rootReducer(s, a) {
   switch (a.type) {
     case 'set':
-      var value = typeof a.value === 'function' ? a.value((0, _fp.get)(a.path, s), s) : a.value;
-      return (0, _fp.set)(a.path, value, s);
+      return (0, _ipath.update)(s, a.path, a.value);
 
     default:
       return s;
