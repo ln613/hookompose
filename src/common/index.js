@@ -4,6 +4,7 @@ import { f } from './utils';
 
 export { http, withFetch, withGet, withPost } from './http';
 export { withStore, Provider } from './store';
+export { withPermission} from './native';
 
 export const compose = (...fns) => Comp => p =>
   Comp(flatten(fns).reduce((r, n) => ({ ...r, ...n(r) }), p));
