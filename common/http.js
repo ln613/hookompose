@@ -11,8 +11,6 @@ var _ramda = require("ramda");
 
 var _utils = require("./utils");
 
-function _readOnlyError(name) { throw new Error("\"" + name + "\" is read-only"); }
-
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
@@ -55,8 +53,7 @@ var http = function http(s, a) {
 
   if ((0, _ramda.isNil)(isValid) || isValid) {
     set('isLoading', true);
-    url = (_readOnlyError("url"), formatUrl(url, params));
-    fetch(url, {
+    fetch(formatUrl(url, params), {
       method: method,
       headers: headers,
       body: JSON.stringify(body)
