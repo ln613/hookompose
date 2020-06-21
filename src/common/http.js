@@ -11,8 +11,7 @@ export const http = (s, a) => {
   if (isNil(isValid) || isValid) {
     set('isLoading', true);
     
-    url = formatUrl(url, params);
-    fetch(url, {
+    fetch(formatUrl(url, params), {
       method,
       headers,
       body: JSON.stringify(body)
