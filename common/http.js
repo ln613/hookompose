@@ -3,17 +3,13 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.withPost = exports.withGet = exports.withFetch = exports.http = void 0;
+exports.http = void 0;
 
 var _react = require("react");
 
+var _ramda = require("ramda");
+
 var _utils = require("./utils");
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _readOnlyError(name) { throw new Error("\"" + name + "\" is read-only"); }
 
@@ -35,64 +31,53 @@ var formatUrl = function formatUrl(url, params) {
   }, url);
 };
 
-var http = function http(p, req) {
-  return function (args) {
-    var _f = (0, _utils.f)(req, args),
-        path = _f.path,
-        _f$method = _f.method,
-        method = _f$method === void 0 ? 'get' : _f$method,
-        url = _f.url,
-        _f$params = _f.params,
-        params = _f$params === void 0 ? {} : _f$params,
-        body = _f.body,
-        _f$headers = _f.headers,
-        headers = _f$headers === void 0 ? {} : _f$headers,
-        transform = _f.transform,
-        done = _f.done,
-        cond = _f.cond;
+var http = function http(s, a) {
+  var _a$req = a.req(s),
+      path = _a$req.path,
+      _a$req$method = _a$req.method,
+      method = _a$req$method === void 0 ? 'get' : _a$req$method,
+      url = _a$req.url,
+      _a$req$params = _a$req.params,
+      params = _a$req$params === void 0 ? {} : _a$req$params,
+      body = _a$req.body,
+      _a$req$headers = _a$req.headers,
+      headers = _a$req$headers === void 0 ? {} : _a$req$headers,
+      transform = _a$req.transform,
+      done = _a$req.done,
+      isValid = _a$req.isValid;
 
-    if (!cond || cond(p)) {
-      p.set('isLoading', true);
-      url = (_readOnlyError("url"), formatUrl(url, (0, _utils.f)(params, p)));
-      fetch(url, {
-        method: method,
-        headers: (0, _utils.f)(headers, p),
-        body: JSON.stringify((0, _utils.f)(body, p))
-      }).then(function (r) {
-        return r.json();
-      }).then(function (r) {
-        return transform ? transform(r, p) : r;
-      }).then(function (r) {
-        done && done(r, p);
-        path && p.set(path, r);
-        p.set('isLoading', false);
-      })["catch"](function (e) {
-        console.log(e);
-        p.set('error', e);
-        p.set('isLoading', false);
-      });
-    }
+  var set = function set(path, value) {
+    return a.dispatch('set', {
+      path: path,
+      value: value
+    });
   };
-};
+
+  if ((0, _ramda.isNil)(isValid) || isValid) {
+    set('isLoading', true);
+    url = (_readOnlyError("url"), formatUrl(url, params));
+    fetch(url, {
+      method: method,
+      headers: headers,
+      body: JSON.stringify(body)
+    }).then(function (r) {
+      return r.json();
+    }).then(function (r) {
+      return transform ? transform(r, s) : r;
+    }).then(function (r) {
+      done && done(r, s);
+      path && set(path, r);
+      set('isLoading', false);
+    })["catch"](function (e) {
+      console.log(e);
+      set('error', e);
+      set('isLoading', false);
+    });
+  }
+}; // export const withFetch = req => p =>
+//   useEffect(() => http(p, req)(), f(req.deps, p))
+// export const withGet = withFetch
+// export const withPost = req => withFetch({ ...req, method: 'post' })
+
 
 exports.http = http;
-
-var withFetch = function withFetch(req) {
-  return function (p) {
-    return (0, _react.useEffect)(function () {
-      return http(p, req)();
-    }, (0, _utils.f)(req.deps, p));
-  };
-};
-
-exports.withFetch = withFetch;
-var withGet = withFetch;
-exports.withGet = withGet;
-
-var withPost = function withPost(req) {
-  return withFetch(_objectSpread({}, req, {
-    method: 'post'
-  }));
-};
-
-exports.withPost = withPost;
