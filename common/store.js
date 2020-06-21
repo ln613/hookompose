@@ -68,7 +68,7 @@ var Provider = function Provider(_ref) {
   var d = function d(type, payload) {
     return dispatch(_objectSpread({}, payload, {
       type: type,
-      dispatch: dispatch
+      dispatch: d
     }));
   };
 

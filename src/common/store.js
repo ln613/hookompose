@@ -24,7 +24,7 @@ const commonState = {
 
 export const Provider = ({ initialValue, children }) => {
   const [state, dispatch] = useReducer(rootReducer, {...commonState, ...initialValue});
-  const d = (type, payload) => dispatch({ ...payload, type, dispatch })
+  const d = (type, payload) => dispatch({ ...payload, type, dispatch: d })
   return (
     <RootContext.Provider value={{ state, dispatch: d }}>
       {children}
