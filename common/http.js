@@ -15,6 +15,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+function _readOnlyError(name) { throw new Error("\"" + name + "\" is read-only"); }
+
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
 
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
@@ -33,23 +35,25 @@ var formatUrl = function formatUrl(url, params) {
   }, url);
 };
 
-var http = function http(_ref3) {
-  var path = _ref3.path,
-      _ref3$method = _ref3.method,
-      method = _ref3$method === void 0 ? 'get' : _ref3$method,
-      url = _ref3.url,
-      _ref3$params = _ref3.params,
-      params = _ref3$params === void 0 ? {} : _ref3$params,
-      body = _ref3.body,
-      _ref3$headers = _ref3.headers,
-      headers = _ref3$headers === void 0 ? {} : _ref3$headers,
-      transform = _ref3.transform,
-      done = _ref3.done,
-      cond = _ref3.cond;
-  return function (p) {
+var http = function http(p, req) {
+  return function (args) {
+    var _f = (0, _utils.f)(req, args),
+        path = _f.path,
+        _f$method = _f.method,
+        method = _f$method === void 0 ? 'get' : _f$method,
+        url = _f.url,
+        _f$params = _f.params,
+        params = _f$params === void 0 ? {} : _f$params,
+        body = _f.body,
+        _f$headers = _f.headers,
+        headers = _f$headers === void 0 ? {} : _f$headers,
+        transform = _f.transform,
+        done = _f.done,
+        cond = _f.cond;
+
     if (!cond || cond(p)) {
       p.set('isLoading', true);
-      url = formatUrl(url, (0, _utils.f)(params, p));
+      url = (_readOnlyError("url"), formatUrl(url, (0, _utils.f)(params, p)));
       fetch(url, {
         method: method,
         headers: (0, _utils.f)(headers, p),
@@ -76,7 +80,7 @@ exports.http = http;
 var withFetch = function withFetch(req) {
   return function (p) {
     return (0, _react.useEffect)(function () {
-      return http(req)(p);
+      return http(p, req)();
     }, (0, _utils.f)(req.deps, p));
   };
 };

@@ -96,7 +96,9 @@ var withStore = function withStore(selector, reqs) {
           value: value
         });
       }
-    }, (0, _ramda.map)(_http.http, reqs));
+    }, (0, _ramda.map)(function (r) {
+      return (0, _http.http)(p, r);
+    }, reqs));
   }].concat(_toConsumableArray(Object.values(reqs).filter(function (x) {
     return x.deps;
   }).map(_http.withFetch)));

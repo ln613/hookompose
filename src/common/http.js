@@ -3,7 +3,8 @@ import { f } from './utils';
 
 const formatUrl = (url, params) => Object.entries(params).reduce((p, [k, v]) => p.replace(new RegExp(`{${k}}`, 'g'), v), url)
 
-export const http = ({ path, method = 'get', url, params = {}, body, headers = {}, transform, done, cond }) => p => {
+export const http = (p, req) => args => {
+  const { path, method = 'get', url, params = {}, body, headers = {}, transform, done, cond } = f(req, args);
   if (!cond || cond(p)) {
     p.set('isLoading', true);
     
@@ -29,7 +30,7 @@ export const http = ({ path, method = 'get', url, params = {}, body, headers = {
 }
 
 export const withFetch = req => p =>
-  useEffect(() => http(req)(p), f(req.deps, p))
+  useEffect(() => http(p, req)(), f(req.deps, p))
 
 export const withGet = withFetch
 

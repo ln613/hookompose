@@ -34,7 +34,7 @@ export const withStore = (selector, reqs) => [
     return {
       ...selector(state),
       set: (path, value) => dispatch({ type: 'set', path, value }),
-      ...map(http, reqs)
+      ...map(r => http(p, r), reqs)
     };
   },
   ...Object.values(reqs)
