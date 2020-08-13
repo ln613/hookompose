@@ -1,6 +1,6 @@
 {
   "name": "hookompose",
-  "version": "0.12.2",
+  "version": "0.12.3",
   "description": "Hookompose allows you to call hook functions in a recompose style, giving you the best of both worlds.",
   "keywords": [
     "javascript",
