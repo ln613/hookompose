@@ -44,35 +44,37 @@ var http = function http(_ref3) {
       url = _ref3.url,
       _ref3$params = _ref3.params,
       params = _ref3$params === void 0 ? {} : _ref3$params,
-      body = _ref3.body,
+      _ref3$body = _ref3.body,
+      body = _ref3$body === void 0 ? {} : _ref3$body,
       _ref3$headers = _ref3.headers,
       headers = _ref3$headers === void 0 ? {} : _ref3$headers,
+      _ref3$isValid = _ref3.isValid,
+      isValid = _ref3$isValid === void 0 ? true : _ref3$isValid,
       transform = _ref3.transform,
       done = _ref3.done,
-      cond = _ref3.cond;
-  return function (p) {
-    if (!cond || cond(p)) {
-      p.set('isLoading', true);
-      url = formatUrl(url, (0, _utils.f)(params, p));
-      fetch(url, {
-        method: method,
-        headers: (0, _utils.f)(headers, p),
-        body: JSON.stringify((0, _utils.f)(body, p))
-      }).then(function (r) {
-        return r.json();
-      }).then(function (r) {
-        return transform ? transform(r, p) : r;
-      }).then(function (r) {
-        done && done(r, p);
-        path && p.set(path, r);
-        p.set('isLoading', false);
-      })["catch"](function (e) {
-        console.log(e);
-        p.set('error', e);
-        p.set('isLoading', false);
-      });
-    }
-  };
+      set = _ref3.set;
+
+  if (isValid) {
+    set('isLoading', true);
+    url = formatUrl(url, params);
+    fetch(url, {
+      method: method,
+      headers: headers,
+      body: JSON.stringify(body)
+    }).then(function (r) {
+      return r.json();
+    }).then(function (r) {
+      return transform ? transform(r) : r;
+    }).then(function (r) {
+      done && done(r);
+      path && set(path, r);
+      set('isLoading', false);
+    })["catch"](function (e) {
+      console.log(e);
+      set('error', e);
+      set('isLoading', false);
+    });
+  }
 };
 
 exports.http = http;
@@ -80,7 +82,7 @@ exports.http = http;
 var withFetch = function withFetch(req) {
   return function (p) {
     return (0, _react.useEffect)(function () {
-      return http(req)(p);
+      return http(req(p));
     }, (0, _utils.f)(req.deps, p));
   };
 };

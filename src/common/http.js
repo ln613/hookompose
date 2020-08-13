@@ -3,33 +3,33 @@ import { f } from './utils';
 
 const formatUrl = (url, params) => Object.entries(params).reduce((p, [k, v]) => p.replace(new RegExp(`{${k}}`, 'g'), v), url)
 
-export const http = ({ path, method = 'get', url, params = {}, body, headers = {}, transform, done, cond }) => p => {
-  if (!cond || cond(p)) {
-    p.set('isLoading', true);
+export const http = ({ path, method = 'get', url, params = {}, body = {}, headers = {}, isValid = true, transform, done, set }) => {
+  if (isValid) {
+    set('isLoading', true);
     
-    url = formatUrl(url, f(params, p));
+    url = formatUrl(url, params);
     fetch(url, {
       method,
-      headers: f(headers, p),
-      body: JSON.stringify(f(body, p))
+      headers,
+      body: JSON.stringify(body)
     })
     .then(r => r.json())
-    .then(r => transform ? transform(r, p) : r)
+    .then(r => transform ? transform(r) : r)
     .then(r => {
-      done && done(r, p);
-      path && p.set(path, r);
-      p.set('isLoading', false);
+      done && done(r);
+      path && set(path, r);
+      set('isLoading', false);
     })
     .catch(e => {
       console.log(e);
-      p.set('error', e);
-      p.set('isLoading', false);
+      set('error', e);
+      set('isLoading', false);
     })
   }
 }
 
 export const withFetch = req => p =>
-  useEffect(() => http(req)(p), f(req.deps, p))
+  useEffect(() => http(req(p)), f(req.deps, p))
 
 export const withGet = withFetch
 

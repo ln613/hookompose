@@ -87,15 +87,21 @@ var withStore = function withStore(selector, reqs) {
         state = _useContext.state,
         dispatch = _useContext.dispatch;
 
+    var set = function set(path, value) {
+      return dispatch({
+        type: 'set',
+        path: path,
+        value: value
+      });
+    };
+
     return _objectSpread({}, selector(state), {
-      set: function set(path, value) {
-        return dispatch({
-          type: 'set',
-          path: path,
-          value: value
-        });
-      }
-    }, (0, _ramda.map)(_http.http, reqs));
+      set: set
+    }, (0, _ramda.map)(function (f) {
+      return function (p) {
+        return (0, _http.http)(f(p));
+      };
+    }, reqs));
   }].concat(_toConsumableArray(Object.values(reqs).filter(function (x) {
     return x.deps;
   }).map(_http.withFetch)));
