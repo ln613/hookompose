@@ -71,10 +71,17 @@ var Provider = function Provider(_ref) {
       state = _useReducer2[0],
       dispatch = _useReducer2[1];
 
+  var d = function d(type, payload) {
+    return dispatch(_objectSpread({}, payload, {
+      type: type,
+      dispatch: d
+    }));
+  };
+
   return /*#__PURE__*/_react["default"].createElement(RootContext.Provider, {
     value: {
       state: state,
-      dispatch: dispatch
+      dispatch: d
     }
   }, children);
 };

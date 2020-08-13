@@ -39,6 +39,12 @@ Object.defineProperty(exports, "Provider", {
     return _store.Provider;
   }
 });
+Object.defineProperty(exports, "withPermission", {
+  enumerable: true,
+  get: function get() {
+    return _native.withPermission;
+  }
+});
 exports.withRef = exports.withMemo = exports.withReducer = exports.withContext = exports.withInterval = exports.withWindowEventHandler = exports.withEventHandler = exports.withLayoutEffect = exports.withEffect = exports.withState = exports.compose = void 0;
 
 var _react = require("react");
@@ -50,6 +56,8 @@ var _utils = require("./utils");
 var _http = require("./http");
 
 var _store = require("./store");
+
+var _native = require("./native");
 
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 
