@@ -39,7 +39,7 @@ export const withStore = (selector, reqs) => [
       ...map(f => p => http(f(p)), reqs)
     };
   },
-  ...Object.values(reqs)
-    .filter(x => x.deps)
-    .map(withFetch)
+  ...Object.entries(reqs)
+    .filter(([k]) => k.slice(0, 1) === '_')
+    .map(([k, v]) => withFetch(v))
 ]

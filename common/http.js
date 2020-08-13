@@ -82,7 +82,7 @@ exports.http = http;
 var withFetch = function withFetch(req) {
   return function (p) {
     return (0, _react.useEffect)(function () {
-      return http(req(p));
+      return http(req);
     }, (0, _utils.f)(req.deps, p));
   };
 };
