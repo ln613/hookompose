@@ -115,18 +115,7 @@ var withStore = function withStore(selector, reqs) {
         return (0, _http.http)(f(p), set);
       };
     }, reqs));
-  }].concat(_toConsumableArray(Object.entries(reqs).filter(function (_ref2) {
-    var _ref3 = _slicedToArray(_ref2, 1),
-        k = _ref3[0];
-
-    return k.slice(0, 1) === '_';
-  }).map(function (_ref4) {
-    var _ref5 = _slicedToArray(_ref4, 2),
-        k = _ref5[0],
-        v = _ref5[1];
-
-    return (0, _http.withFetch)(v);
-  })));
+  }].concat(_toConsumableArray(Object.values(reqs).map(_http.withFetch)));
 };
 
 exports.withStore = withStore;

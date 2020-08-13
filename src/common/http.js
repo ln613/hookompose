@@ -29,8 +29,11 @@ export const http = ({ path, method = 'get', url, params = {}, body, headers = {
   }
 }
 
-export const withFetch = req => p =>
-  useEffect(() => http(req, dispatchSet(p.dispatch)), f(req.deps, p))
+export const withFetch = req => p => {
+  const opt = f(req, p);
+  if (opt.deps)
+    useEffect(() => http(opt, dispatchSet(p.dispatch)), f(opt.deps, p))
+}
 
 export const withGet = withFetch
 

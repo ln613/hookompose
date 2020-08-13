@@ -81,9 +81,10 @@ exports.http = http;
 
 var withFetch = function withFetch(req) {
   return function (p) {
-    return (0, _react.useEffect)(function () {
-      return http(req, (0, _store.dispatchSet)(p.dispatch));
-    }, (0, _utils.f)(req.deps, p));
+    var opt = (0, _utils.f)(req, p);
+    if (opt.deps) (0, _react.useEffect)(function () {
+      return http(opt, (0, _store.dispatchSet)(p.dispatch));
+    }, (0, _utils.f)(opt.deps, p));
   };
 };
 
