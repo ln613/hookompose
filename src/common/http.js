@@ -4,7 +4,7 @@ import { dispatchSet } from './store';
 
 const formatUrl = (url, params) => Object.entries(params).reduce((p, [k, v]) => p.replace(new RegExp(`{${k}}`, 'g'), v), url)
 
-export const http = ({ path, method = 'get', url, params = {}, body = {}, headers = {}, isValid = true, transform, done }, set) => {
+export const http = ({ path, method = 'get', url, params = {}, body, headers = {}, isValid = true, transform, done }, set) => {
   if (isValid) {
     set('isLoading', true);
     
