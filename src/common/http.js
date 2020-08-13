@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
 import { f } from './utils';
+import { dispatchSet } from './store';
 
 const formatUrl = (url, params) => Object.entries(params).reduce((p, [k, v]) => p.replace(new RegExp(`{${k}}`, 'g'), v), url)
 
-export const http = ({ path, method = 'get', url, params = {}, body = {}, headers = {}, isValid = true, transform, done, set }) => {
+export const http = ({ path, method = 'get', url, params = {}, body = {}, headers = {}, isValid = true, transform, done }, set) => {
   if (isValid) {
     set('isLoading', true);
     
@@ -29,7 +30,7 @@ export const http = ({ path, method = 'get', url, params = {}, body = {}, header
 }
 
 export const withFetch = req => p =>
-  useEffect(() => http(req), f(req.deps, p))
+  useEffect(() => http(req, dispatchSet(p.dispatch)), f(req.deps, p))
 
 export const withGet = withFetch
 

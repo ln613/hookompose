@@ -5,7 +5,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.withStore = exports.Provider = void 0;
+exports.withStore = exports.dispatchSet = exports.Provider = void 0;
 
 var _react = _interopRequireWildcard(require("react"));
 
@@ -88,25 +88,31 @@ var Provider = function Provider(_ref) {
 
 exports.Provider = Provider;
 
+var dispatchSet = function dispatchSet(dispatch) {
+  return function (path, value) {
+    return dispatch({
+      type: 'set',
+      path: path,
+      value: value
+    });
+  };
+};
+
+exports.dispatchSet = dispatchSet;
+
 var withStore = function withStore(selector, reqs) {
   return [function (p) {
     var _useContext = (0, _react.useContext)(RootContext),
         state = _useContext.state,
         dispatch = _useContext.dispatch;
 
-    var set = function set(path, value) {
-      return dispatch({
-        type: 'set',
-        path: path,
-        value: value
-      });
-    };
-
+    var set = dispatchSet(dispatch);
     return _objectSpread({}, selector(state), {
+      dispatch: dispatch,
       set: set
     }, (0, _ramda.map)(function (f) {
       return function (p) {
-        return (0, _http.http)(f(p));
+        return (0, _http.http)(f(p), set);
       };
     }, reqs));
   }].concat(_toConsumableArray(Object.entries(reqs).filter(function (_ref2) {

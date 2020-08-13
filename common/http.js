@@ -9,6 +9,8 @@ var _react = require("react");
 
 var _utils = require("./utils");
 
+var _store = require("./store");
+
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -37,7 +39,7 @@ var formatUrl = function formatUrl(url, params) {
   }, url);
 };
 
-var http = function http(_ref3) {
+var http = function http(_ref3, set) {
   var path = _ref3.path,
       _ref3$method = _ref3.method,
       method = _ref3$method === void 0 ? 'get' : _ref3$method,
@@ -51,8 +53,7 @@ var http = function http(_ref3) {
       _ref3$isValid = _ref3.isValid,
       isValid = _ref3$isValid === void 0 ? true : _ref3$isValid,
       transform = _ref3.transform,
-      done = _ref3.done,
-      set = _ref3.set;
+      done = _ref3.done;
 
   if (isValid) {
     set('isLoading', true);
@@ -82,7 +83,7 @@ exports.http = http;
 var withFetch = function withFetch(req) {
   return function (p) {
     return (0, _react.useEffect)(function () {
-      return http(req);
+      return http(req, (0, _store.dispatchSet)(p.dispatch));
     }, (0, _utils.f)(req.deps, p));
   };
 };

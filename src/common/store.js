@@ -29,14 +29,17 @@ export const Provider = ({ initialValue, children }) => {
   );
 }
 
+export const dispatchSet = dispatch => (path, value) => dispatch({ type: 'set', path, value });
+
 export const withStore = (selector, reqs) => [
   p => {
     const {state, dispatch} = useContext(RootContext);
-    const set = (path, value) => dispatch({ type: 'set', path, value });
+    const set = dispatchSet(dispatch);
     return {
       ...selector(state),
+      dispatch,
       set,
-      ...map(f => p => http(f(p)), reqs)
+      ...map(f => p => http(f(p), set), reqs)
     };
   },
   ...Object.entries(reqs)
