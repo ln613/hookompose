@@ -90,8 +90,7 @@ exports.Provider = Provider;
 
 var dispatchSet = function dispatchSet(dispatch) {
   return function (path, value) {
-    return dispatch({
-      type: 'set',
+    return dispatch('set', {
       path: path,
       value: value
     });

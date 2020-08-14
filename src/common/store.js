@@ -29,7 +29,7 @@ export const Provider = ({ initialValue, children }) => {
   );
 }
 
-export const dispatchSet = dispatch => (path, value) => dispatch({ type: 'set', path, value });
+export const dispatchSet = dispatch => (path, value) => dispatch('set', { path, value });
 
 export const withStore = (selector, reqs) => [
   p => {
